@@ -26,11 +26,15 @@ const GameBoard = () => {
 		if (isCellAvailable(row, col)) {
 			board[row][col].setValue(char, player); //player object argument
 			console.log(`cell at row ${row}, col ${col} as been set by ${player} with ${char}`);
+		} else {
+			console.warn(`cell at row ${row} and col ${col} is not available`);
 		}
 	};
 
 	const checkWinner = (playerChar) => {
-		const winConditions = [
+		const checkPattern = (pattern) => pattern.every(([row, col]) => board[row][col].getValue().char === playerChar);
+
+		const winPatterns = [
 			// Rows
 			[
 				[0, 0],
@@ -76,15 +80,15 @@ const GameBoard = () => {
 			],
 		];
 
-		return winConditions.some((pattern) => pattern.every(([row, col]) => board[row][col].getValue().char === playerChar));
+		return winPatterns.some(checkPattern);
 	};
 
-	const print = () => {
-		const boardValues = board.map((row) => row.map((cell) => cell.getValue().char)); // not easy to understand. come with your solution
+	const printConsoleTable = () => {
+		const boardValues = board.map((row) => row.map((cell) => cell.getValue().char));
 		console.table(boardValues);
 	};
 
-	return { getBoard, print, isCellAvailable, setCell, checkWinner };
+	return { getBoard, printConsoleTable, isCellAvailable, setCell, checkWinner };
 };
 
 const Cell = () => {
@@ -106,11 +110,11 @@ const Cell = () => {
 const GameController = (playerOneName = "Player One", playerTwoName = "Player Two") => {
 	const players = [
 		{
-			char: "x",
+			char: "X",
 			playerName: playerOneName,
 		},
 		{
-			char: "0",
+			char: "O",
 			playerName: playerTwoName,
 		},
 	];
@@ -118,6 +122,7 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 	const board = GameBoard();
 
 	let activePlayerIndex = 0;
+	let gameEnded = false;
 
 	const switchPlayer = () => {
 		activePlayerIndex = 1 - activePlayerIndex; // toggle index
@@ -126,23 +131,39 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 	const getActivePlayer = () => players[activePlayerIndex];
 
 	const printRound = () => {
-		board.print();
+		board.printConsoleTable();
+		if (gameEnded) console.warn(`${getActivePlayer().playerName} won the game!`);
 		console.log(`It is ${getActivePlayer().playerName}'s turn`);
 	};
 
 	const playRound = (row, col) => {
-		console.log(`Player ${getActivePlayer().playerName} checked with ${getActivePlayer().char} at ${row} -> ${col} `);
-		const cell = board.isCellAvailable(row, col);
-		cell && board.setCell(row, col, getActivePlayer().char, getActivePlayer().playerName);
-		const winner = board.checkWinner(getActivePlayer().char);
-		console.log("winner:", winner);
-		if (winner) {
-			console.log("------------------------------And the winner is:", getActivePlayer().playerName);
-			printRound();
+		if (gameEnded) {
+			console.warn("Game has ended! No more moves allowed.");
 			return;
+		}
+		console.log(`Player ${getActivePlayer().playerName} placed ${getActivePlayer().char} at (${row}, ${col})`);
+
+		if (!board.isCellAvailable(row, col)) {
+			console.warn("Cell already occupied! Choose another.");
+			return;
+		}
+		const isAvailable = board.isCellAvailable(row, col);
+		if (isAvailable) {
+			board.setCell(row, col, getActivePlayer().char, getActivePlayer().playerName);
+			const winner = board.checkWinner(getActivePlayer().char);
+			console.log("winner:", winner);
+			if (winner) {
+				console.log("!! And the winner is:", getActivePlayer().playerName, "!!");
+				gameEnded = true;
+				printRound();
+				return;
+			} else {
+				gameEnded = false;
+				printRound();
+				switchPlayer();
+			}
 		} else {
-			printRound();
-			switchPlayer();
+			console.warn("Choose another cell that is not occupied!");
 		}
 	};
 
@@ -151,6 +172,7 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 	return { playRound, getActivePlayer };
 };
 
+console.log("--------------test 1----------------");
 const game = GameController();
 game.playRound(1, 1);
 game.playRound(0, 0);
@@ -158,3 +180,4 @@ game.playRound(2, 2);
 game.playRound(0, 1);
 game.playRound(2, 1);
 game.playRound(0, 2);
+game.playRound(2, 0);
