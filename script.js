@@ -5,15 +5,24 @@
 
 const GameBoard = () => {
 	const size = 3; // size of the board
-	const board = [];
+	let board = [];
 
-	for (let i = 0; i < size; i++) {
-		const row = [];
-		for (let j = 0; j < size; j++) {
-			row.push(Cell());
+	const initBoard = () => {
+		board = [];
+		for (let i = 0; i < size; i++) {
+			const row = [];
+			for (let j = 0; j < size; j++) {
+				row.push(Cell());
+			}
+			board.push(row);
 		}
-		board.push(row);
-	}
+	};
+
+	initBoard();
+
+	const resetBoard = () => {
+		initBoard();
+	};
 
 	const getBoard = () => board;
 
@@ -88,7 +97,7 @@ const GameBoard = () => {
 		console.table(boardValues);
 	};
 
-	return { getBoard, printConsoleTable, isCellAvailable, setCell, checkWinner };
+	return { getBoard, printConsoleTable, isCellAvailable, setCell, checkWinner, resetBoard };
 };
 
 const Cell = () => {
@@ -123,6 +132,14 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 
 	let activePlayerIndex = 0;
 	let gameEnded = false;
+
+	const resetGame = () => {
+		activePlayerIndex = 0;
+		gameEnded = false;
+		board.resetBoard();
+		console.log("Game is reset");
+		printRound();
+	};
 
 	const switchPlayer = () => {
 		activePlayerIndex = 1 - activePlayerIndex; // toggle index
@@ -169,7 +186,7 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 
 	printRound();
 
-	return { playRound, getActivePlayer };
+	return { playRound, getActivePlayer, resetGame };
 };
 
 console.log("--------------test 1----------------");
@@ -180,4 +197,9 @@ game.playRound(2, 2);
 game.playRound(0, 1);
 game.playRound(2, 1);
 game.playRound(0, 2);
-game.playRound(2, 0);
+
+game.resetGame();
+
+game.playRound(1, 1);
+game.playRound(2, 1);
+game.playRound(0, 1);
