@@ -17,32 +17,80 @@ const GameBoard = () => {
 
 	const getBoard = () => board;
 
-	const checkCell = (row, col, player, char) => {
-		const cell = board[row][col];
-		let isCellAvailable = false;
-		if (cell.getValue().char === "*") {
-			isCellAvailable = true;
-			console.log(`Cell at (${row}, ${col}) is available:`, cell.getValue());
-		} else {
-			isCellAvailable = false;
-			console.log(`Cell at (${row}, ${col}) is occupied by ${cell.getValue().player} with ${cell.getValue().char}`);
-		}
+	const isCellAvailable = (row, col) => {
+		return board[row][col].getValue().char === "*"; // to be changed
+	};
 
-		isCellAvailable && cell.setValue(char, player);
+	const setCell = (row, col, char, player) => {
+		// change to pass row col and a player object argument
+		if (isCellAvailable(row, col)) {
+			board[row][col].setValue(char, player); //player object argument
+			console.log(`cell at row ${row}, col ${col} as been set by ${player} with ${char}`);
+		}
+	};
+
+	const checkWinner = (playerChar) => {
+		const winConditions = [
+			// Rows
+			[
+				[0, 0],
+				[0, 1],
+				[0, 2],
+			],
+			[
+				[1, 0],
+				[1, 1],
+				[1, 2],
+			],
+			[
+				[2, 0],
+				[2, 1],
+				[2, 2],
+			],
+			// Columns
+			[
+				[0, 0],
+				[1, 0],
+				[2, 0],
+			],
+			[
+				[0, 1],
+				[1, 1],
+				[2, 1],
+			],
+			[
+				[0, 2],
+				[1, 2],
+				[2, 2],
+			],
+			// Diagonals
+			[
+				[0, 0],
+				[1, 1],
+				[2, 2],
+			],
+			[
+				[0, 2],
+				[1, 1],
+				[2, 0],
+			],
+		];
+
+		return winConditions.some((pattern) => pattern.every(([row, col]) => board[row][col].getValue().char === playerChar));
 	};
 
 	const print = () => {
-		const boardValues = board.map((row) => row.map((cell) => cell.getValue().char));
+		const boardValues = board.map((row) => row.map((cell) => cell.getValue().char)); // not easy to understand. come with your solution
 		console.table(boardValues);
 	};
 
-	return { getBoard, print, checkCell };
+	return { getBoard, print, isCellAvailable, setCell, checkWinner };
 };
 
 const Cell = () => {
 	const value = {
-		player: null,
 		char: "*",
+		player: null,
 	};
 
 	const getValue = () => value;
@@ -69,12 +117,13 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 
 	const board = GameBoard();
 
-	let activePlayer = players[0];
+	let activePlayerIndex = 0;
 
 	const switchPlayer = () => {
-		activePlayer = activePlayer === players[0] ? players[1] : players[0];
+		activePlayerIndex = 1 - activePlayerIndex; // toggle index
 	};
-	const getActivePlayer = () => activePlayer;
+
+	const getActivePlayer = () => players[activePlayerIndex];
 
 	const printRound = () => {
 		board.print();
@@ -83,9 +132,18 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 
 	const playRound = (row, col) => {
 		console.log(`Player ${getActivePlayer().playerName} checked with ${getActivePlayer().char} at ${row} -> ${col} `);
-		board.checkCell(row, col, getActivePlayer().playerName, getActivePlayer().char);
-		switchPlayer();
-		printRound();
+		const cell = board.isCellAvailable(row, col);
+		cell && board.setCell(row, col, getActivePlayer().char, getActivePlayer().playerName);
+		const winner = board.checkWinner(getActivePlayer().char);
+		console.log("winner:", winner);
+		if (winner) {
+			console.log("------------------------------And the winner is:", getActivePlayer().playerName);
+			printRound();
+			return;
+		} else {
+			printRound();
+			switchPlayer();
+		}
 	};
 
 	printRound();
