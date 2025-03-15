@@ -4,13 +4,12 @@
 // logic and UI will be separated into separate factory functions
 
 const GameBoard = () => {
-	const rows = 3;
-	const columns = 3;
+	const size = 3; // size of the board
 	const board = [];
 
-	for (let i = 0; i < rows; i++) {
+	for (let i = 0; i < size; i++) {
 		const row = [];
-		for (let j = 0; j < columns; j++) {
+		for (let j = 0; j < size; j++) {
 			row.push(Cell());
 		}
 		board.push(row);
@@ -26,7 +25,7 @@ const GameBoard = () => {
 			console.log(`Cell at (${row}, ${col}) is available:`, cell.getValue());
 		} else {
 			isCellAvailable = false;
-			console.log(`Cell at (${row}, ${col}) is occupied by Player ${cell.getValue().player} with ${cell.getValue().char}`);
+			console.log(`Cell at (${row}, ${col}) is occupied by ${cell.getValue().player} with ${cell.getValue().char}`);
 		}
 
 		isCellAvailable && cell.setValue(char, player);
@@ -55,12 +54,49 @@ const Cell = () => {
 
 	return { getValue, setValue };
 };
-const p1 = "Player One";
-const p2 = "Player Two";
-const game = GameBoard();
-game.print();
-console.log("-------------");
-game.checkCell(0, 0, p1, "x");
-game.checkCell(0, 1, p2, "0");
-game.checkCell(0, 0, p1, "x");
-game.print();
+
+const GameController = (playerOneName = "Player One", playerTwoName = "Player Two") => {
+	const players = [
+		{
+			char: "x",
+			playerName: playerOneName,
+		},
+		{
+			char: "0",
+			playerName: playerTwoName,
+		},
+	];
+
+	const board = GameBoard();
+
+	let activePlayer = players[0];
+
+	const switchPlayer = () => {
+		activePlayer = activePlayer === players[0] ? players[1] : players[0];
+	};
+	const getActivePlayer = () => activePlayer;
+
+	const printRound = () => {
+		board.print();
+		console.log(`It is ${getActivePlayer().playerName}'s turn`);
+	};
+
+	const playRound = (row, col) => {
+		console.log(`Player ${getActivePlayer().playerName} checked with ${getActivePlayer().char} at ${row} -> ${col} `);
+		board.checkCell(row, col, getActivePlayer().playerName, getActivePlayer().char);
+		switchPlayer();
+		printRound();
+	};
+
+	printRound();
+
+	return { playRound, getActivePlayer };
+};
+
+const game = GameController();
+game.playRound(1, 1);
+game.playRound(0, 0);
+game.playRound(2, 2);
+game.playRound(0, 1);
+game.playRound(2, 1);
+game.playRound(0, 2);
