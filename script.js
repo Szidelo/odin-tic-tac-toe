@@ -4,7 +4,7 @@
 // logic and UI will be separated into separate factory functions
 
 const GameBoard = () => {
-	const size = 3; // size of the board
+	let size = 3; // initial size of the board
 	let board = [];
 
 	const initBoard = () => {
@@ -42,55 +42,35 @@ const GameBoard = () => {
 
 	// TODO: add a checkTie method that check that there are no cells === "*"
 
+	const generateWinPatterns = () => {
+		const rows = [];
+		const cols = [];
+		const diagonal = [];
+		const antiDiagonal = [];
+
+		for (let i = 0; i < size; i++) {
+			const rowPattern = [];
+			const colPattern = [];
+
+			for (let j = 0; j < size; j++) {
+				rowPattern.push([i, j]);
+				colPattern.push([j, i]);
+			}
+
+			rows.push(rowPattern);
+			cols.push(colPattern);
+
+			diagonal.push([i, i]);
+			antiDiagonal.push([i, size - 1 - i]);
+		}
+
+		return [...rows, ...cols, diagonal, antiDiagonal];
+	};
+
 	const checkWinner = (playerChar) => {
 		const checkPattern = (pattern) => pattern.every(([row, col]) => board[row][col].getValue().char === playerChar);
 
-		// this is a hardcoded win patterns. TODO: try to make dynamic generateWinPatterns(size: 3x3 || 9x9 || etc)
-		const winPatterns = [
-			// Rows
-			[
-				[0, 0],
-				[0, 1],
-				[0, 2],
-			],
-			[
-				[1, 0],
-				[1, 1],
-				[1, 2],
-			],
-			[
-				[2, 0],
-				[2, 1],
-				[2, 2],
-			],
-			// Columns
-			[
-				[0, 0],
-				[1, 0],
-				[2, 0],
-			],
-			[
-				[0, 1],
-				[1, 1],
-				[2, 1],
-			],
-			[
-				[0, 2],
-				[1, 2],
-				[2, 2],
-			],
-			// Diagonals
-			[
-				[0, 0],
-				[1, 1],
-				[2, 2],
-			],
-			[
-				[0, 2],
-				[1, 1],
-				[2, 0],
-			],
-		];
+		const winPatterns = generateWinPatterns();
 
 		return winPatterns.some(checkPattern);
 	};
@@ -101,7 +81,7 @@ const GameBoard = () => {
 		console.table(boardValues);
 	};
 
-	return { getBoard, printConsoleTable, isCellAvailable, setCell, checkWinner, resetBoard };
+	return { getBoard, printConsoleTable, isCellAvailable, setCell, checkWinner, resetBoard, generateWinPatterns };
 };
 
 const Cell = () => {
