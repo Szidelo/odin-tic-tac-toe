@@ -7,6 +7,27 @@
 		<title>tic-tac-toe</title>
 	</head>
 	<body>
+		<main id="app">
+			<div id="settings">
+				<div class="top">
+					<div class="theme">0</div>
+					<div class="lang">
+						<select name="language" id="language">
+							<option value="en">English</option>
+							<option value="de">Deutsch</option>
+							<option value="it">Italiano</option>
+							<option value="ro">Română</option>
+							<option value="hu">Magyar</option>
+						</select>
+					</div>
+				</div>
+				<div class="main">
+					<div class="logo"></div>
+					<h1 id="main-title"></h1>
+				</div>
+			</div>
+			<div id="game" style="display: none;"></div>
+		</main>
 		<script src="script.js"></script>
 	</body>
 </html>

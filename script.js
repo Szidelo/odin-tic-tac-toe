@@ -215,18 +215,22 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 	return { playRound, getActivePlayer, resetGame };
 };
 
-const textManager = LanguageManager();
-const data = async () => {
-	const result = await textManager.getTranslations();
-	return result;
-};
+// const textManager = LanguageManager();
+// const data = async () => {
+// 	const result = await textManager.getTranslations();
+// 	return result;
+// };
 
-const LogInData = async () => {
-	for (const [key, val] of Object.entries(LANGAUGES)) {
-		textManager.setLanguage(val);
-		const data = await textManager.getTranslations();
-		console.log(`${key}:`, data);
-	}
-};
+// const LogInData = async () => {
+// 	for (const [key, val] of Object.entries(LANGAUGES)) {
+// 		textManager.setLanguage(val);
+// 		const data = await textManager.getTranslations();
+// 		console.log(`${key}:`, data);
+// 	}
+// };
 
-LogInData();
+// LogInData();
+
+// textManager.setLanguage(LANGAUGES.ENGLISH);
+
+const GameUI = () => {};
