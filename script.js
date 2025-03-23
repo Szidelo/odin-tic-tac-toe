@@ -3,12 +3,32 @@
 // functionality first, UI second with separate factory functions
 // logic and UI will be separated into separate factory functions
 
-const LANGAUGE = {
-	ENGLISH: 'en',
-	GERMAN: 'de',
-	ITALIAN: 'it',
-	ROMANIAN: 'ro',
-	HUNGARIAN: 'hu'}
+const LANGAUGES = {
+	ENGLISH: "en",
+	GERMAN: "de",
+	ITALIAN: "it",
+	ROMANIAN: "ro",
+	HUNGARIAN: "hu",
+};
+
+const LanguageManager = () => {
+	let currentLanguage = localStorage.getItem("lng") || LANGAUGES.ENGLISH;
+
+	const getCurrentLanguage = () => currentLanguage;
+
+	const setLanguage = (lang) => {
+		currentLanguage = lang;
+		localStorage.setItem("lng", lang);
+	};
+
+	const getTranslations = async () => {
+		const response = await fetch("./translations.JSON");
+		const data = await response.json();
+		return data[getCurrentLanguage()];
+	};
+
+	return { setLanguage, getCurrentLanguage, getTranslations };
+};
 
 const GameBoard = (gridSize = 3) => {
 	let size = gridSize;
@@ -86,7 +106,16 @@ const GameBoard = (gridSize = 3) => {
 		console.table(boardValues);
 	};
 
-	return { getBoard, printConsoleTable, isCellAvailable, setCell, checkWinner, resetBoard, generateWinPatterns, checkTie };
+	return {
+		getBoard,
+		printConsoleTable,
+		isCellAvailable,
+		setCell,
+		checkWinner,
+		resetBoard,
+		generateWinPatterns,
+		checkTie,
+	};
 };
 
 const Cell = () => {
@@ -185,3 +214,19 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 
 	return { playRound, getActivePlayer, resetGame };
 };
+
+const textManager = LanguageManager();
+const data = async () => {
+	const result = await textManager.getTranslations();
+	return result;
+};
+
+const LogInData = async () => {
+	for (const [key, val] of Object.entries(LANGAUGES)) {
+		textManager.setLanguage(val);
+		const data = await textManager.getTranslations();
+		console.log(`${key}:`, data);
+	}
+};
+
+LogInData();
