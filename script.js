@@ -215,22 +215,32 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 	return { playRound, getActivePlayer, resetGame };
 };
 
-// const textManager = LanguageManager();
-// const data = async () => {
-// 	const result = await textManager.getTranslations();
-// 	return result;
-// };
+const GameUI = () => {
+	const mainTitle = document.querySelector("#main-title");
+	const btnSolo = document.querySelector("#btn-solo");
+	const btnWithFriend = document.querySelector("#btn-friend");
+	const btnRules = document.querySelector("#btn-rules");
+	const languageManager = LanguageManager();
+	const languageSelect = document.querySelector("#language-select");
 
-// const LogInData = async () => {
-// 	for (const [key, val] of Object.entries(LANGAUGES)) {
-// 		textManager.setLanguage(val);
-// 		const data = await textManager.getTranslations();
-// 		console.log(`${key}:`, data);
-// 	}
-// };
+	const updateUI = async () => {
+		const data = await languageManager.getTranslations();
+		mainTitle.textContent = data.titles.main;
+		btnSolo.textContent = data.buttons.play_solo;
+		btnWithFriend.textContent = data.buttons.play_friend;
+		btnRules.textContent = data.buttons.game_rules;
+		updateBoard();
+	};
 
-// LogInData();
+	const handleLanguageChange = async (event) => {
+		languageManager.setLanguage(event.target.value);
+		await updateUI();
+	};
 
-// textManager.setLanguage(LANGAUGES.ENGLISH);
+	languageSelect.addEventListener("change", handleLanguageChange);
 
-const GameUI = () => {};
+	return { updateUI };
+};
+
+const game = GameUI();
+game.updateUI();

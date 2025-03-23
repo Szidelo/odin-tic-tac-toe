@@ -18,6 +18,7 @@
     --button-bg: #5a6e95;
     --button-hover: #7a8fb6;
     --border-color: #3e4d6b;
+    --shadow: 0 4px 4px 4px rgba(0, 0, 0, 0.3);
 }
 
 body {
@@ -30,10 +31,10 @@ body {
 }
 
 main {
-    min-width: 1440px;
+    width: 1440px;
+    max-width: 95%;
     margin: 0 auto;
     padding: 2rem;
-    border: 1px solid red;
 }
 
 #settings .top {
@@ -47,6 +48,7 @@ main {
     justify-content: center;
     align-items: center;
     gap: 2rem;
+    margin-top: 4rem;
 }
 
 #settings .main .logo{
@@ -54,6 +56,48 @@ main {
     height: 10rem;
     background: radial-gradient(circle, var(--text-color) 0%, var(--secondary-color) 100%);
     border-radius: 0.5rem;
-    box-shadow: 0 4px 7px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow);
+}
+
+#settings .bottom {
+    display: flex;
+    flex-direction: column;
+    margin: 2rem auto;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    max-width: 15rem;
+}
+
+.btn {
+    background-color: var(--text-color);
+    color: black;
+    text-transform: capitalize;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 1rem;
+    width: 100%;
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: var(--button-hover);
+}
+
+.btn:active {
+    background-color: var(--secondary-color);
+}
+
+.btn.btn-secundary {
+    background-color: var(--button-bg);
+    color: var(--text-color);
+}
+
+.btn.btn-secundary:hover {
+    background-color: var(--text-color);
+    color: black;
 }
 
