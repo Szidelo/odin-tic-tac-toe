@@ -1,0 +1,122 @@
+{
+    "en": {
+        "titles": {
+            "main": "Tic-Tac-Toe",
+            "rules": "Game Rules"
+        },
+        "buttons": {
+            "play_solo": "Play Solo",
+            "play_friend": "Play with a Friend",
+            "reset_game": "Reset Game",
+            "game_rules": "Game Rules",
+            "about": "About"
+        },
+        "difficulty": {
+            "easy": "Easy Mode",
+            "intermediate": "Intermediate Mode",
+            "hard": "Hard Mode",
+            "impossible": "Impossible Mode"
+        },
+        "rules": {
+            "win": "Get 3 marks in a row, Player wins. Game ends.",
+            "defeat": "Opponent gets 3 marks in a row, Player loses. Game ends.",
+            "draw": "Board full. No 3 in a row, No winner. Game ends."
+        }
+    },
+    "de": {
+        "titles": {
+            "main": "Tic-Tac-Toe",
+            "rules": "Spielregeln"
+        },
+        "buttons": {
+            "play_solo": "Alleine spielen",
+            "play_friend": "Mit einem Freund spielen",
+            "reset_game": "Spiel zurücksetzen",
+            "game_rules": "Spielregeln",
+            "about": "Über"
+        },
+        "difficulty": {
+            "easy": "Einfacher Modus",
+            "intermediate": "Mittlerer Modus",
+            "hard": "Schwerer Modus",
+            "impossible": "Unmöglicher Modus"
+        },
+        "rules": {
+            "win": "Erhalte 3 Markierungen in einer Reihe. Spieler gewinnt. Spiel endet.",
+            "defeat": "Gegner erhält 3 Markierungen in einer Reihe. Spieler verliert. Spiel endet.",
+            "draw": "Brett voll. Keine 3 in einer Reihe. Kein Gewinner. Spiel endet."
+        }
+    },
+    "it": {
+        "titles": {
+            "main": "Tris",
+            "rules": "Regole del gioco"
+        },
+        "buttons": {
+            "play_solo": "Gioca da solo",
+            "play_friend": "Gioca con un amico",
+            "reset_game": "Resetta il gioco",
+            "game_rules": "Regole del gioco",
+            "about": "Informazioni"
+        },
+        "difficulty": {
+            "easy": "Modalità Facile",
+            "intermediate": "Modalità Intermedia",
+            "hard": "Modalità Difficile",
+            "impossible": "Modalità Impossibile"
+        },
+        "rules": {
+            "win": "Ottieni 3 segni in fila. Il giocatore vince. Il gioco finisce.",
+            "defeat": "L'avversario ottiene 3 segni in fila. Il giocatore perde. Il gioco finisce.",
+            "draw": "Tabellone pieno. Nessun 3 in fila. Nessun vincitore. Il gioco finisce."
+        }
+    },
+    "ro": {
+        "titles": {
+            "main": "X și O",
+            "rules": "Reguli de joc"
+        },
+        "buttons": {
+            "play_solo": "Joacă singur",
+            "play_friend": "Joacă cu un prieten",
+            "reset_game": "Resetează jocul",
+            "game_rules": "Reguli de joc",
+            "about": "Despre"
+        },
+        "difficulty": {
+            "easy": "Mod Ușor",
+            "intermediate": "Mod Intermediar",
+            "hard": "Mod Dificil",
+            "impossible": "Mod Imposibil"
+        },
+        "rules": {
+            "win": "Obține 3 semne la rând. Jucătorul câștigă. Jocul se termină.",
+            "defeat": "Adversarul obține 3 semne la rând. Jucătorul pierde. Jocul se termină.",
+            "draw": "Tabla plină. Niciun 3 la rând. Niciun câștigător. Jocul se termină."
+        }
+    },
+    "hu": {
+        "titles": {
+            "main": "Amőba",
+            "rules": "Játékszabályok"
+        },
+        "buttons": {
+            "play_solo": "Játssz egyedül",
+            "play_friend": "Játssz egy baráttal",
+            "reset_game": "Játék újraindítása",
+            "game_rules": "Játékszabályok",
+            "about": "Névjegy"
+        },
+        "difficulty": {
+            "easy": "Könnyű mód",
+            "intermediate": "Közepes mód",
+            "hard": "Nehéz mód",
+            "impossible": "Lehetetlen mód"
+        },
+        "rules": {
+            "win": "Szerezz 3 jelet egy sorban. A játékos nyer. A játék véget ér.",
+            "defeat": "Az ellenfél szerez 3 jelet egy sorban. A játékos veszít. A játék véget ér.",
+            "draw": "Tábla tele. Nincs 3 egy sorban. Nincs győztes. A játék véget ér."
+        }
+    }
+}

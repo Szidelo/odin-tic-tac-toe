@@ -3,6 +3,13 @@
 // functionality first, UI second with separate factory functions
 // logic and UI will be separated into separate factory functions
 
+const LANGAUGE = {
+	ENGLISH: 'en',
+	GERMAN: 'de',
+	ITALIAN: 'it',
+	ROMANIAN: 'ro',
+	HUNGARIAN: 'hu'}
+
 const GameBoard = (gridSize = 3) => {
 	let size = gridSize;
 	let board = [];
@@ -178,30 +185,3 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 
 	return { playRound, getActivePlayer, resetGame };
 };
-
-// console.log("--------------test 1 3x3 grid attempt to check cell after game is won----------------");
-// const game = GameController();
-// game.playRound(0, 0);
-// game.playRound(0, 1);
-// game.playRound(0, 2);
-// game.playRound(1, 0);
-// game.playRound(1, 1);
-// game.playRound(1, 2);
-// game.playRound(2, 0);
-// game.playRound(2, 2);
-// game.playRound(2, 1);
-// game.playRound(1, 1);
-// game.playRound(2, 2);
-
-// console.log("--------------test 1 3x3 grid check tie if all cells are checked----------------");
-
-// const game2 = GameController();
-// game2.playRound(0, 0); // X
-// game2.playRound(0, 1); // O
-// game2.playRound(0, 2); // X
-// game2.playRound(1, 1); // O
-// game2.playRound(1, 0); // X
-// game2.playRound(1, 2); // O
-// game2.playRound(2, 1); // X
-// game2.playRound(2, 0); // O
-// game2.playRound(2, 2); // X
