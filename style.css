@@ -100,3 +100,7 @@ main {
     background-color: var(--text-color);
     color: black;
 }
+
+select, option {
+    text-transform: capitalize;
+}

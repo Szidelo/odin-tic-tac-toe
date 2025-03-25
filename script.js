@@ -228,7 +228,9 @@ const GameUI = () => {
 		option.setAttribute("value", value);
 		option.textContent = key.toLowerCase();
 		languageSelect.appendChild(option);
-
+		if (languageManager.getCurrentLanguage() === option.value) {
+			option.setAttribute("selected", true);
+		}
 		console.log(option);
 	}
 
