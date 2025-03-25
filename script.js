@@ -216,12 +216,21 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 };
 
 const GameUI = () => {
+	const languageManager = LanguageManager();
 	const mainTitle = document.querySelector("#main-title");
 	const btnSolo = document.querySelector("#btn-solo");
 	const btnWithFriend = document.querySelector("#btn-friend");
 	const btnRules = document.querySelector("#btn-rules");
-	const languageManager = LanguageManager();
 	const languageSelect = document.querySelector("#language-select");
+
+	for (const [key, value] of Object.entries(LANGAUGES)) {
+		const option = document.createElement("option");
+		option.setAttribute("value", value);
+		option.textContent = key.toLowerCase();
+		languageSelect.appendChild(option);
+
+		console.log(option);
+	}
 
 	const updateUI = async () => {
 		const data = await languageManager.getTranslations();
