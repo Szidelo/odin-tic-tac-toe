@@ -13,11 +13,7 @@
 					<div class="theme">0</div>
 					<div class="lang">
 						<select name="language" id="language-select">
-							<!-- <option value="en">English</option>
-							<option value="de">Deutsch</option>
-							<option value="it">Italiano</option>
-							<option value="ro">Română</option>
-							<option value="hu">Magyar</option> -->
+							<!-- options are created in js -->
 						</select>
 					</div>
 				</div>
@@ -33,7 +29,25 @@
 
 				</div>
 			</div>
-			<div id="game" style="display: none;"></div>
+			<div id="game" style="display: none;">
+				<div class="top">
+					<a href="#">home</a>
+					<h2>easy mode</h2>
+				</div>
+				<div class="players-labels">
+					<div class="player-one"></div>
+					<div class="player-two"></div>
+				</div>
+				<div class="board-container">
+					 <!--populat with js --> 
+					<h1 id="turn"></h1>
+					<div id="board"></div>
+				</div>
+				<div class="bottom">
+					<button class="btn" id="reset-game"></button>
+					<button class="btn btn-secundary" id="btn-rules-game"></button>
+				</div>
+			</div>
 		</main>
 		<script src="script.js"></script>
 	</body>

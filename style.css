@@ -104,3 +104,20 @@ main {
 select, option {
     text-transform: capitalize;
 }
+
+#game .top {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 2rem 0;
+}
+
+#game .top a {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    color: var(--text-color);
+}

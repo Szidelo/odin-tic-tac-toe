@@ -221,7 +221,11 @@ const GameUI = () => {
 	const btnSolo = document.querySelector("#btn-solo");
 	const btnWithFriend = document.querySelector("#btn-friend");
 	const btnRules = document.querySelector("#btn-rules");
+	const btnRulesGame = document.querySelector("#btn-rules-game");
+	const btnReset = document.querySelector("#reset-game");
 	const languageSelect = document.querySelector("#language-select");
+	const settingsSection = document.querySelector("#settings");
+	const gameSection = document.querySelector("#game");
 
 	for (const [key, value] of Object.entries(LANGAUGES)) {
 		const option = document.createElement("option");
@@ -231,16 +235,21 @@ const GameUI = () => {
 		if (languageManager.getCurrentLanguage() === option.value) {
 			option.setAttribute("selected", true);
 		}
-		console.log(option);
 	}
+
+	const updateButtonsText = (data) => {
+		const { titles, buttons } = data;
+		mainTitle.textContent = titles.main;
+		btnSolo.textContent = buttons.play_solo;
+		btnWithFriend.textContent = buttons.play_friend;
+		btnRules.textContent = buttons.game_rules;
+		btnRulesGame.textContent = buttons.game_rules;
+		btnReset.textContent = buttons.reset_game;
+	};
 
 	const updateUI = async () => {
 		const data = await languageManager.getTranslations();
-		mainTitle.textContent = data.titles.main;
-		btnSolo.textContent = data.buttons.play_solo;
-		btnWithFriend.textContent = data.buttons.play_friend;
-		btnRules.textContent = data.buttons.game_rules;
-		updateBoard();
+		updateButtonsText(data);
 	};
 
 	const handleLanguageChange = async (event) => {
@@ -248,10 +257,23 @@ const GameUI = () => {
 		await updateUI();
 	};
 
-	languageSelect.addEventListener("change", handleLanguageChange);
+	const handleEvents = (() => {
+		languageSelect.addEventListener("change", handleLanguageChange);
+		btnSolo.addEventListener("click", () => {
+			settingsSection.style.display = "none";
+			gameSection.style.display = "block";
+		});
+	})();
 
 	return { updateUI };
 };
 
-const game = GameUI();
-game.updateUI();
+const gameUI = GameUI();
+gameUI.updateUI();
+
+const game = GameController();
+// game.playRound(0, 0);
+// game.playRound(0, 1);
+// game.playRound(1, 0);
+// game.playRound(1, 2);
+// game.playRound(2, 0);
