@@ -59,7 +59,7 @@ main {
     box-shadow: var(--shadow);
 }
 
-#settings .bottom {
+.bottom {
     display: flex;
     flex-direction: column;
     margin: 2rem auto;
@@ -101,6 +101,16 @@ main {
     color: black;
 }
 
+.btn.btn-menu {
+    width: min-content;
+    height: 2rem;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    padding: 0 2rem;
+}
+
 select, option {
     text-transform: capitalize;
 }
@@ -114,10 +124,31 @@ select, option {
     padding: 2rem 0;
 }
 
-#game .top a {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    color: var(--text-color);
+.board-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+
+}
+
+#board {
+    display: grid;
+    width: 15rem;
+    height: 15rem;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    border: solid 1px red;
+    padding: 1rem;
+}
+
+.cell {
+    background-color: var(--highlight-color);
+    border: 1px solid red;
+    padding: 1rem;
+}
+
+.cell:hover {
+    background-color: var(--accent-color);
 }

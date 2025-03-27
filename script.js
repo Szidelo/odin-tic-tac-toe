@@ -223,9 +223,11 @@ const GameUI = () => {
 	const btnRules = document.querySelector("#btn-rules");
 	const btnRulesGame = document.querySelector("#btn-rules-game");
 	const btnReset = document.querySelector("#reset-game");
+	const btnHome = document.querySelector("#btn-home");
 	const languageSelect = document.querySelector("#language-select");
 	const settingsSection = document.querySelector("#settings");
 	const gameSection = document.querySelector("#game");
+	const cells = document.querySelectorAll(".cell");
 
 	for (const [key, value] of Object.entries(LANGAUGES)) {
 		const option = document.createElement("option");
@@ -247,6 +249,17 @@ const GameUI = () => {
 		btnReset.textContent = buttons.reset_game;
 	};
 
+	const fillBoard = (player) => {
+		const board = GameBoard();
+		cells.forEach((cell) => {
+			const row = cell.dataset.row;
+			const col = cell.dataset.col;
+			board.setCell(row, col, player.char, player.playerName);
+
+			console.log("++++++++++++++++++++++++++++++++++++++++++++++", row, col, player.char, player.playerName);
+		});
+	};
+
 	const updateUI = async () => {
 		const data = await languageManager.getTranslations();
 		updateButtonsText(data);
@@ -263,6 +276,23 @@ const GameUI = () => {
 			settingsSection.style.display = "none";
 			gameSection.style.display = "block";
 		});
+		btnHome.addEventListener("click", () => {
+			settingsSection.style.display = "block";
+			gameSection.style.display = "none";
+		});
+	})();
+
+	const handlePlayerCheck = (() => {
+		const game = GameController();
+		console.log(cells);
+		document.addEventListener("click", (e) => {
+			if (e.target.classList.contains("cell")) {
+				const row = e.target.dataset.row;
+				const col = e.target.dataset.col;
+				game.playRound(row, col);
+				fillBoard(game.getActivePlayer());
+			}
+		});
 	})();
 
 	return { updateUI };
@@ -270,10 +300,3 @@ const GameUI = () => {
 
 const gameUI = GameUI();
 gameUI.updateUI();
-
-const game = GameController();
-// game.playRound(0, 0);
-// game.playRound(0, 1);
-// game.playRound(1, 0);
-// game.playRound(1, 2);
-// game.playRound(2, 0);
