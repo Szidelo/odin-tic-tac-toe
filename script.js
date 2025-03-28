@@ -151,13 +151,20 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 	let activePlayerIndex = 0;
 	let gameEnded = false;
 	let rounds = 0;
+	let winner = null;
+
+	const setWinner = (player) => {
+		winner = player;
+	};
+
+	const getWinner = () => winner;
 
 	const resetGame = () => {
 		activePlayerIndex = 0;
 		gameEnded = false;
 		rounds = 0;
 		board.resetBoard();
-		console.log("Game is reset");
+		setWinner(null);
 		printRound();
 	};
 
@@ -165,7 +172,6 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 		activePlayerIndex = 1 - activePlayerIndex; // toggle index
 		rounds++;
 		printRound();
-		console.log("+++game round:", rounds);
 	};
 
 	const getActivePlayer = () => players[activePlayerIndex];
@@ -173,7 +179,6 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 	const printRound = () => {
 		board.printConsoleTable();
 		if (gameEnded) console.warn(`${getActivePlayer().playerName} won the game!`);
-		console.log(`It is ${getActivePlayer().playerName}'s turn`);
 	};
 
 	const playRound = (row, col) => {
@@ -184,8 +189,6 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 			return;
 		}
 
-		console.log(`Player ${playerName} placed ${char} at (${row}, ${col})`);
-
 		const isAvailable = board.isCellAvailable(row, col);
 
 		if (!isAvailable) {
@@ -194,10 +197,10 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 		}
 
 		board.setCell(row, col, char, playerName);
-		const winner = board.checkWinner(char);
-		if (winner) {
+		const isWon = board.checkWinner(char);
+		if (isWon) {
 			printRound();
-			console.log("!! And the winner is:", playerName, "!!");
+			setWinner(playerName);
 			gameEnded = true;
 			return;
 		} else {
@@ -212,10 +215,12 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 
 	printRound();
 
-	return { playRound, getActivePlayer, resetGame };
+	return { playRound, getActivePlayer, resetGame, getWinner };
 };
 
 const GameUI = () => {
+	const game = GameController();
+	const board = GameBoard();
 	const languageManager = LanguageManager();
 	const mainTitle = document.querySelector("#main-title");
 	const btnSolo = document.querySelector("#btn-solo");
@@ -249,15 +254,11 @@ const GameUI = () => {
 		btnReset.textContent = buttons.reset_game;
 	};
 
-	const fillBoard = (player) => {
-		const board = GameBoard();
-		cells.forEach((cell) => {
-			const row = cell.dataset.row;
-			const col = cell.dataset.col;
-			board.setCell(row, col, player.char, player.playerName);
-
-			console.log("++++++++++++++++++++++++++++++++++++++++++++++", row, col, player.char, player.playerName);
-		});
+	const fillBoard = (player, cell) => {
+		const row = cell.dataset.row;
+		const col = cell.dataset.col;
+		board.setCell(row, col, player.char, player.playerName);
+		cell.textContent = player.char;
 	};
 
 	const updateUI = async () => {
@@ -268,6 +269,15 @@ const GameUI = () => {
 	const handleLanguageChange = async (event) => {
 		languageManager.setLanguage(event.target.value);
 		await updateUI();
+	};
+
+	const checkIfGameIsWon = () => {
+		const winner = game.getWinner();
+		if (winner) {
+			return true;
+		} else {
+			return false;
+		}
 	};
 
 	const handleEvents = (() => {
@@ -283,14 +293,24 @@ const GameUI = () => {
 	})();
 
 	const handlePlayerCheck = (() => {
-		const game = GameController();
-		console.log(cells);
 		document.addEventListener("click", (e) => {
 			if (e.target.classList.contains("cell")) {
-				const row = e.target.dataset.row;
-				const col = e.target.dataset.col;
+				const cell = e.target;
+				const row = cell.dataset.row;
+				const col = cell.dataset.col;
+				const activePlayer = game.getActivePlayer();
 				game.playRound(row, col);
-				fillBoard(game.getActivePlayer());
+				fillBoard(activePlayer, cell);
+
+				setTimeout(() => {
+					if (checkIfGameIsWon()) {
+						alert("game is won in ui by", activePlayer);
+						game.resetGame();
+						cells.forEach((cell) => {
+							cell.textContent = "";
+						});
+					}
+				}, 1000);
 			}
 		});
 	})();
