@@ -48,12 +48,20 @@ const GameBoard = (gridSize = 3) => {
 	initBoard();
 
 	const resetBoard = () => {
-		initBoard();
+		board = []; // Reinitialize the board array
+		for (let i = 0; i < size; i++) {
+			const row = [];
+			for (let j = 0; j < size; j++) {
+				row.push(Cell()); // Create new Cell instances
+			}
+			board.push(row);
+		}
 	};
 
 	const getBoard = () => board;
 
 	const isCellAvailable = (row, col) => {
+		console.log(board[row][col].getValue().playerName);
 		return board[row][col].getValue().playerName === null; // to be changed
 	};
 
@@ -62,7 +70,7 @@ const GameBoard = (gridSize = 3) => {
 		if (isCellAvailable(row, col)) {
 			board[row][col].setValue(char, player); //player object argument
 		} else {
-			console.warn(`cell at row ${row} and col ${col} is not available`);
+			console.warn(`cell at row ${row} and col ${col} is not available`); // if i reset the game and try to set a cell that was already set, it will not work
 		}
 	};
 
@@ -102,9 +110,13 @@ const GameBoard = (gridSize = 3) => {
 	};
 
 	const printConsoleTable = () => {
-		const boardValues = board.map((row) => row.map((cell) => cell.getValue().char));
+		const boardValues = board.map((row) => row.map((cell) => cell.getValue().playerName));
 		console.table(boardValues);
 	};
+
+	const getWinningPattern = () => {
+		return generateWinPatterns()
+	}
 
 	return {
 		getBoard,
@@ -115,6 +127,7 @@ const GameBoard = (gridSize = 3) => {
 		resetBoard,
 		generateWinPatterns,
 		checkTie,
+		getWinningPattern,
 	};
 };
 
@@ -259,6 +272,7 @@ const GameUI = () => {
 		const col = cell.dataset.col;
 		board.setCell(row, col, player.char, player.playerName);
 		cell.textContent = player.char;
+		cell.classList.add(player.char.toLowerCase());
 	};
 
 	const updateUI = async () => {
@@ -290,6 +304,16 @@ const GameUI = () => {
 			settingsSection.style.display = "block";
 			gameSection.style.display = "none";
 		});
+		btnReset.addEventListener('click', () => {
+			board.resetBoard();
+			game.resetGame();
+			cells.forEach((cell) => {
+				cell.textContent = "";
+				cell.classList.remove("filled"); 
+				cell.classList.remove("x");
+				cell.classList.remove("o");
+			});
+		})
 	})();
 
 	const handlePlayerCheck = (() => {
@@ -299,16 +323,24 @@ const GameUI = () => {
 				const row = cell.dataset.row;
 				const col = cell.dataset.col;
 				const activePlayer = game.getActivePlayer();
+				if (cell.textContent !== "") return; // if cell is already filled, do nothing
 				game.playRound(row, col);
 				fillBoard(activePlayer, cell);
-
+	
 				setTimeout(() => {
 					if (checkIfGameIsWon()) {
-						alert("game is won in ui by", activePlayer);
-						game.resetGame();
-						cells.forEach((cell) => {
-							cell.textContent = "";
-						});
+						const winningPattern = board.generateWinPatterns().find((pattern) =>
+							pattern.every(([r, c]) => board.getBoard()[r][c].getValue().char === activePlayer.char)
+						);
+	
+						if (winningPattern) {
+							winningPattern.forEach(([r, c]) => {
+								const winningCell = document.querySelector(`[data-row="${r}"][data-col="${c}"]`);
+								if (winningCell) {
+									winningCell.classList.add("filled");
+								}
+							});
+						}
 					}
 				}, 1000);
 			}
