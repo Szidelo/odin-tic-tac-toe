@@ -172,6 +172,20 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 
 	const getWinner = () => winner;
 
+	const score = {
+		playerOne: 0,
+		playerTwo: 0,
+	}
+
+	const getScore = () => score;
+
+	const setScore = (player) => {
+		if (player === players[0].playerName) {
+			score.playerOne++;
+		} else if (player === players[1].playerName) {
+			score.playerTwo++;
+		}}
+
 	const resetGame = () => {
 		activePlayerIndex = 0;
 		gameEnded = false;
@@ -228,7 +242,7 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 
 	printRound();
 
-	return { playRound, getActivePlayer, resetGame, getWinner };
+	return { playRound, getActivePlayer, resetGame, getWinner, getScore, setScore };
 };
 
 const GameUI = () => {
@@ -246,6 +260,8 @@ const GameUI = () => {
 	const settingsSection = document.querySelector("#settings");
 	const gameSection = document.querySelector("#game");
 	const cells = document.querySelectorAll(".cell");
+	const playerOneScore = document.querySelector("#player1-score");
+	const playerTwoScore = document.querySelector("#player2-score");
 
 	for (const [key, value] of Object.entries(LANGAUGES)) {
 		const option = document.createElement("option");
@@ -256,6 +272,8 @@ const GameUI = () => {
 			option.setAttribute("selected", true);
 		}
 	}
+
+
 
 	const updateButtonsText = (data) => {
 		const { titles, buttons } = data;
@@ -285,6 +303,12 @@ const GameUI = () => {
 		await updateUI();
 	};
 
+	const updateScore = (winner) => {
+		game.setScore(winner);
+		playerOneScore.textContent = game.getScore().playerOne;
+		playerTwoScore.textContent = game.getScore().playerTwo;
+	}
+
 	const checkIfGameIsWon = () => {
 		const winner = game.getWinner();
 		if (winner) {
@@ -293,6 +317,21 @@ const GameUI = () => {
 			return false;
 		}
 	};
+
+	const fillWinningPattern = (activePlayer) => {
+		const winningPattern = board.generateWinPatterns().find((pattern) =>
+			pattern.every(([row, col]) => board.getBoard()[row][col].getValue().char === activePlayer.char)
+		);
+
+		if (winningPattern) {
+			winningPattern.forEach(([row, col]) => {
+				const winningCell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+				if (winningCell) {
+					winningCell.classList.add("filled");
+				}
+			});
+		}
+	}
 
 	const handleEvents = (() => {
 		languageSelect.addEventListener("change", handleLanguageChange);
@@ -323,26 +362,18 @@ const GameUI = () => {
 				const row = cell.dataset.row;
 				const col = cell.dataset.col;
 				const activePlayer = game.getActivePlayer();
-				if (cell.textContent !== "") return; // if cell is already filled, do nothing
+				if (cell.textContent !== "") return;
 				game.playRound(row, col);
 				fillBoard(activePlayer, cell);
 	
 				setTimeout(() => {
 					if (checkIfGameIsWon()) {
-						const winningPattern = board.generateWinPatterns().find((pattern) =>
-							pattern.every(([r, c]) => board.getBoard()[r][c].getValue().char === activePlayer.char)
-						);
-	
-						if (winningPattern) {
-							winningPattern.forEach(([r, c]) => {
-								const winningCell = document.querySelector(`[data-row="${r}"][data-col="${c}"]`);
-								if (winningCell) {
-									winningCell.classList.add("filled");
-								}
-							});
-						}
+						fillWinningPattern(activePlayer);
+						const winner = game.getWinner();
+						updateScore(winner);
+
 					}
-				}, 1000);
+				}, 300);
 			}
 		});
 	})();

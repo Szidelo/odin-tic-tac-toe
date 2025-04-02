@@ -31,16 +31,33 @@
 			</div>
 			<div id="game" style="display: none;">
 				<div class="top">
-					<button class="btn btn-menu" id="btn-home">Home</button>
-					<h2>easy mode</h2>
+					<button class="btn btn-menu" id="btn-home">
+						<svg class="icon home" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+							<title>Home</title>
+							<path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z" />
+						</svg>
+					</button>
+					<h2 id="difficulty-mode">Easy Mode</h2>
 				</div>
-				<div class="players-labels">
-					<div class="player-one"></div>
-					<div class="player-two"></div>
+				<div class="player-labels">
+					<div class="player-container">
+						<h4 class="x">X</h4>
+						<div class="player">
+							<div class="player-name" id="player1-name">You:</div>
+							<div class="player-score" id="player1-score">0</div>
+						</div>
+					</div>
+					<div class="player-container">
+						<h4 class="o">O</h4>
+						<div class="player">
+							<div class="player-name" id="player2-name">Player 2</div>
+							<div class="player-score" id="player2-score">0</div>
+						</div>
+					</div>
 				</div>
 				<div class="board-container">
 					 <!--populat with js --> 
-					<h1 id="turn">Your turn</h1>
+					<h1 id="turn">Your Turn</h1>
 					<div id="board">
 						<div data-row="0" data-col="0" class="cell"></div>
 						<div data-row="0" data-col="1" class="cell"></div>
