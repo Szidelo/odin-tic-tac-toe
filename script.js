@@ -262,6 +262,7 @@ const GameUI = () => {
 	const cells = document.querySelectorAll(".cell");
 	const playerOneScore = document.querySelector("#player1-score");
 	const playerTwoScore = document.querySelector("#player2-score");
+	const turn = document.querySelector("#turn");
 
 	for (const [key, value] of Object.entries(LANGAUGES)) {
 		const option = document.createElement("option");
@@ -272,8 +273,6 @@ const GameUI = () => {
 			option.setAttribute("selected", true);
 		}
 	}
-
-
 
 	const updateButtonsText = (data) => {
 		const { titles, buttons } = data;
@@ -333,6 +332,16 @@ const GameUI = () => {
 		}
 	}
 
+	const handleTurnMessage = (activePlayer) => {
+		if (activePlayer.playerName === 'Player One') {
+			turn.textContent = `Your turn`;
+		} else if (activePlayer.playerName === 'Player Two') {
+			turn.textContent = `Computer turn`;
+		}
+	}
+
+	
+
 	const handleEvents = (() => {
 		languageSelect.addEventListener("change", handleLanguageChange);
 		btnSolo.addEventListener("click", () => {
@@ -346,6 +355,7 @@ const GameUI = () => {
 		btnReset.addEventListener('click', () => {
 			board.resetBoard();
 			game.resetGame();
+			turn.textContent = "Your turn";
 			cells.forEach((cell) => {
 				cell.textContent = "";
 				cell.classList.remove("filled"); 
@@ -363,15 +373,31 @@ const GameUI = () => {
 				const col = cell.dataset.col;
 				const activePlayer = game.getActivePlayer();
 				if (cell.textContent !== "") return;
+				if (game.getWinner()) return;
 				game.playRound(row, col);
 				fillBoard(activePlayer, cell);
-	
+				if (game.getWinner() === null && !board.checkTie()) {
+					const nextPlayer = game.getActivePlayer();
+					handleTurnMessage(nextPlayer);
+				}
 				setTimeout(() => {
 					if (checkIfGameIsWon()) {
 						fillWinningPattern(activePlayer);
 						const winner = game.getWinner();
 						updateScore(winner);
+						turn.textContent = `${winner === "Player One" ? "You" : "Computer"} won!`;
+						setTimeout(() => {
+							btnReset.click();
+						}, 3000)
+						return
+					}
 
+					if(board.checkTie()) {
+						turn.textContent = `Game ended in a tie!`;
+						setTimeout(() => {
+							btnReset.click();
+						}, 3000)
+						return
 					}
 				}, 300);
 			}
