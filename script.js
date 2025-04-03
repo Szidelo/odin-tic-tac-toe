@@ -393,27 +393,6 @@ const GameUI = () => {
 						return;
 					}
 				}, 300);
-
-				// setTimeout(() => {
-				// 	if (checkIfGameIsWon()) {
-				// 		fillWinningPattern(activePlayer);
-				// 		const winner = game.getWinner();
-				// 		updateScore(winner);
-				// 		turn.textContent = `${winner === "Player One" ? "You" : "Computer"} won!`;
-				// 		setTimeout(() => {
-				// 			btnReset.click();
-				// 		}, 2000);
-				// 		return;
-				// 	}
-
-				// 	if (board.checkTie()) {
-				// 		turn.textContent = `Game ended in a tie!`;
-				// 		setTimeout(() => {
-				// 			btnReset.click();
-				// 		}, 2000);
-				// 		return;
-				// 	}
-				// }, 300);
 			}
 		});
 	})();
