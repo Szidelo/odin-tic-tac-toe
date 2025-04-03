@@ -256,6 +256,7 @@ const GameUI = () => {
 	const playerOneScore = document.querySelector("#player1-score");
 	const playerTwoScore = document.querySelector("#player2-score");
 	const turn = document.querySelector("#turn");
+	const difficultyMode = document.querySelector("#difficulty-mode");
 
 	Object.entries(LANGUAGES).forEach(([key, value]) => {
 		const option = document.createElement("option");
@@ -268,14 +269,16 @@ const GameUI = () => {
 		}
 	});
 
-	const updateButtonsText = (data) => {
-		const { titles, buttons } = data;
+	const updateText = (data) => {
+		const { titles, buttons, difficulty, turn_text } = data;
 		mainTitle.textContent = titles.main;
 		btnSolo.textContent = buttons.play_solo;
 		btnWithFriend.textContent = buttons.play_friend;
 		btnRules.textContent = buttons.game_rules;
 		btnRulesGame.textContent = buttons.game_rules;
 		btnReset.textContent = buttons.reset_game;
+		difficultyMode.textContent = difficulty.easy;
+		turn.textContent = turn_text.player;
 	};
 
 	const fillBoard = (player, cell) => {
@@ -288,7 +291,7 @@ const GameUI = () => {
 
 	const updateUI = async () => {
 		const data = await languageManager.getTranslations();
-		updateButtonsText(data);
+		updateText(data);
 	};
 
 	const handleLanguageChange = async (event) => {
@@ -319,26 +322,33 @@ const GameUI = () => {
 		}
 	};
 
-	const handleTurnMessage = (activePlayer) => {
+	const handleTurnMessage = async (activePlayer) => {
+		const translations = await languageManager.getTranslations();
+		const turn_text = translations.turn_text;
+
 		if (activePlayer.playerName === "Player One") {
-			turn.textContent = `Your turn`;
+			turn.textContent = turn_text.player;
 		} else if (activePlayer.playerName === "Player Two") {
-			turn.textContent = `Computer turn`;
+			turn.textContent = turn_text.opponent;
 		}
 	};
 
-	const handleWin = (activePlayer) => {
+	const handleWin = async (activePlayer) => {
+		const translations = await languageManager.getTranslations();
+		const text = translations.game_over;
 		fillWinningPattern(activePlayer);
 		const winner = game.getWinner();
 		updateScore(winner);
-		turn.textContent = `${winner === "Player One" ? "You" : "Computer"} won!`;
+		turn.textContent = winner === "Player One" ? text.win : text.defeat;
 		setTimeout(() => {
 			btnReset.click();
 		}, 2000);
 	};
 
-	const handleTie = () => {
-		turn.textContent = `Game ended in a tie!`;
+	const handleTie = async () => {
+		const translations = await languageManager.getTranslations();
+		const text = translations.game_over;
+		turn.textContent = text.draw;
 		setTimeout(() => {
 			btnReset.click();
 		}, 2000);
