@@ -3,7 +3,7 @@
 // functionality first, UI second with separate factory functions
 // logic and UI will be separated into separate factory functions
 
-const LANGAUGES = {
+const LANGUAGES = {
 	ENGLISH: "en",
 	GERMAN: "de",
 	ITALIAN: "it",
@@ -12,7 +12,7 @@ const LANGAUGES = {
 };
 
 const LanguageManager = () => {
-	let currentLanguage = localStorage.getItem("lng") || LANGAUGES.ENGLISH;
+	let currentLanguage = localStorage.getItem("lng") || LANGUAGES.ENGLISH;
 
 	const getCurrentLanguage = () => currentLanguage;
 
@@ -31,7 +31,7 @@ const LanguageManager = () => {
 };
 
 const GameBoard = (gridSize = 3) => {
-	let size = gridSize;
+	const size = gridSize;
 	let board = [];
 
 	const initBoard = () => {
@@ -48,21 +48,13 @@ const GameBoard = (gridSize = 3) => {
 	initBoard();
 
 	const resetBoard = () => {
-		board = []; // Reinitialize the board array
-		for (let i = 0; i < size; i++) {
-			const row = [];
-			for (let j = 0; j < size; j++) {
-				row.push(Cell()); // Create new Cell instances
-			}
-			board.push(row);
-		}
+		initBoard(); // reinitialize the board
 	};
 
 	const getBoard = () => board;
 
 	const isCellAvailable = (row, col) => {
-		console.log(board[row][col].getValue().playerName);
-		return board[row][col].getValue().playerName === null; // to be changed
+		return board[row][col].getValue().char === "*"; // check if the cell is empty
 	};
 
 	const setCell = (row, col, char, player) => {
@@ -101,10 +93,11 @@ const GameBoard = (gridSize = 3) => {
 		return [...rows, ...cols, diagonal, antiDiagonal];
 	};
 
+	const winPatterns = generateWinPatterns(); // by declaring it here, we can use it in checkWinner and it will not be recreated every time
+	// this will be called only once, when the board is created
+
 	const checkWinner = (playerChar) => {
 		const checkPattern = (pattern) => pattern.every(([row, col]) => board[row][col].getValue().char === playerChar);
-
-		const winPatterns = generateWinPatterns();
 
 		return winPatterns.some(checkPattern);
 	};
@@ -113,10 +106,6 @@ const GameBoard = (gridSize = 3) => {
 		const boardValues = board.map((row) => row.map((cell) => cell.getValue().playerName));
 		console.table(boardValues);
 	};
-
-	const getWinningPattern = () => {
-		return generateWinPatterns()
-	}
 
 	return {
 		getBoard,
@@ -127,7 +116,6 @@ const GameBoard = (gridSize = 3) => {
 		resetBoard,
 		generateWinPatterns,
 		checkTie,
-		getWinningPattern,
 	};
 };
 
@@ -175,7 +163,7 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 	const score = {
 		playerOne: 0,
 		playerTwo: 0,
-	}
+	};
 
 	const getScore = () => score;
 
@@ -184,7 +172,8 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 			score.playerOne++;
 		} else if (player === players[1].playerName) {
 			score.playerTwo++;
-		}}
+		}
+	};
 
 	const resetGame = () => {
 		activePlayerIndex = 0;
@@ -264,15 +253,16 @@ const GameUI = () => {
 	const playerTwoScore = document.querySelector("#player2-score");
 	const turn = document.querySelector("#turn");
 
-	for (const [key, value] of Object.entries(LANGAUGES)) {
+	Object.entries(LANGUAGES).forEach(([key, value]) => {
 		const option = document.createElement("option");
 		option.setAttribute("value", value);
 		option.textContent = key.toLowerCase();
 		languageSelect.appendChild(option);
+
 		if (languageManager.getCurrentLanguage() === option.value) {
 			option.setAttribute("selected", true);
 		}
-	}
+	});
 
 	const updateButtonsText = (data) => {
 		const { titles, buttons } = data;
@@ -306,21 +296,14 @@ const GameUI = () => {
 		game.setScore(winner);
 		playerOneScore.textContent = game.getScore().playerOne;
 		playerTwoScore.textContent = game.getScore().playerTwo;
-	}
-
-	const checkIfGameIsWon = () => {
-		const winner = game.getWinner();
-		if (winner) {
-			return true;
-		} else {
-			return false;
-		}
 	};
 
+	const checkIfGameIsWon = () => !!game.getWinner();
+
 	const fillWinningPattern = (activePlayer) => {
-		const winningPattern = board.generateWinPatterns().find((pattern) =>
-			pattern.every(([row, col]) => board.getBoard()[row][col].getValue().char === activePlayer.char)
-		);
+		const winningPattern = board
+			.generateWinPatterns()
+			.find((pattern) => pattern.every(([row, col]) => board.getBoard()[row][col].getValue().char === activePlayer.char));
 
 		if (winningPattern) {
 			winningPattern.forEach(([row, col]) => {
@@ -330,17 +313,15 @@ const GameUI = () => {
 				}
 			});
 		}
-	}
+	};
 
 	const handleTurnMessage = (activePlayer) => {
-		if (activePlayer.playerName === 'Player One') {
+		if (activePlayer.playerName === "Player One") {
 			turn.textContent = `Your turn`;
-		} else if (activePlayer.playerName === 'Player Two') {
+		} else if (activePlayer.playerName === "Player Two") {
 			turn.textContent = `Computer turn`;
 		}
-	}
-
-	
+	};
 
 	const handleEvents = (() => {
 		languageSelect.addEventListener("change", handleLanguageChange);
@@ -352,34 +333,38 @@ const GameUI = () => {
 			settingsSection.style.display = "block";
 			gameSection.style.display = "none";
 		});
-		btnReset.addEventListener('click', () => {
+		btnReset.addEventListener("click", () => {
 			board.resetBoard();
 			game.resetGame();
 			turn.textContent = "Your turn";
 			cells.forEach((cell) => {
 				cell.textContent = "";
-				cell.classList.remove("filled"); 
+				cell.classList.remove("filled");
 				cell.classList.remove("x");
 				cell.classList.remove("o");
 			});
-		})
+		});
 	})();
 
 	const handlePlayerCheck = (() => {
+		const isCellAvailable = (cell) => cell.textContent === "" && !game.getWinner();
 		document.addEventListener("click", (e) => {
 			if (e.target.classList.contains("cell")) {
 				const cell = e.target;
+				if (!isCellAvailable(cell)) return; // check if the cell is available
+
 				const row = cell.dataset.row;
 				const col = cell.dataset.col;
+
 				const activePlayer = game.getActivePlayer();
-				if (cell.textContent !== "") return;
-				if (game.getWinner()) return;
 				game.playRound(row, col);
 				fillBoard(activePlayer, cell);
+
 				if (game.getWinner() === null && !board.checkTie()) {
 					const nextPlayer = game.getActivePlayer();
 					handleTurnMessage(nextPlayer);
 				}
+
 				setTimeout(() => {
 					if (checkIfGameIsWon()) {
 						fillWinningPattern(activePlayer);
@@ -388,16 +373,16 @@ const GameUI = () => {
 						turn.textContent = `${winner === "Player One" ? "You" : "Computer"} won!`;
 						setTimeout(() => {
 							btnReset.click();
-						}, 3000)
-						return
+						}, 3000);
+						return;
 					}
 
-					if(board.checkTie()) {
+					if (board.checkTie()) {
 						turn.textContent = `Game ended in a tie!`;
 						setTimeout(() => {
 							btnReset.click();
-						}, 3000)
-						return
+						}, 3000);
+						return;
 					}
 				}, 300);
 			}
