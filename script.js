@@ -13,6 +13,7 @@ const LANGUAGES = {
 
 const LanguageManager = () => {
 	let currentLanguage = localStorage.getItem("lng") || LANGUAGES.ENGLISH;
+	let translations = null; // to store translations
 
 	const getCurrentLanguage = () => currentLanguage;
 
@@ -22,9 +23,12 @@ const LanguageManager = () => {
 	};
 
 	const getTranslations = async () => {
-		const response = await fetch("./translations.JSON");
-		const data = await response.json();
-		return data[getCurrentLanguage()];
+		if (!translations) {
+			const response = await fetch("./translations.JSON");
+			const data = await response.json();
+			translations = data; // store translations
+		}
+		return translations[getCurrentLanguage()];
 	};
 
 	return { setLanguage, getCurrentLanguage, getTranslations };
