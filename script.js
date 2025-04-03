@@ -323,6 +323,24 @@ const GameUI = () => {
 		}
 	};
 
+	const handleWin = (activePlayer) => {
+		fillWinningPattern(activePlayer);
+		const winner = game.getWinner();
+		updateScore(winner);
+		turn.textContent = `${winner === "Player One" ? "You" : "Computer"} won!`;
+		setTimeout(() => {
+			btnReset.click();
+		}, 2000);
+	};
+
+	const handleTie = () => {
+		turn.textContent = `Game ended in a tie!`;
+		setTimeout(() => {
+			btnReset.click();
+		}, 2000);
+		return;
+	};
+
 	const handleEvents = (() => {
 		languageSelect.addEventListener("change", handleLanguageChange);
 		btnSolo.addEventListener("click", () => {
@@ -367,24 +385,35 @@ const GameUI = () => {
 
 				setTimeout(() => {
 					if (checkIfGameIsWon()) {
-						fillWinningPattern(activePlayer);
-						const winner = game.getWinner();
-						updateScore(winner);
-						turn.textContent = `${winner === "Player One" ? "You" : "Computer"} won!`;
-						setTimeout(() => {
-							btnReset.click();
-						}, 3000);
+						handleWin(activePlayer);
 						return;
 					}
-
 					if (board.checkTie()) {
-						turn.textContent = `Game ended in a tie!`;
-						setTimeout(() => {
-							btnReset.click();
-						}, 3000);
+						handleTie();
 						return;
 					}
 				}, 300);
+
+				// setTimeout(() => {
+				// 	if (checkIfGameIsWon()) {
+				// 		fillWinningPattern(activePlayer);
+				// 		const winner = game.getWinner();
+				// 		updateScore(winner);
+				// 		turn.textContent = `${winner === "Player One" ? "You" : "Computer"} won!`;
+				// 		setTimeout(() => {
+				// 			btnReset.click();
+				// 		}, 2000);
+				// 		return;
+				// 	}
+
+				// 	if (board.checkTie()) {
+				// 		turn.textContent = `Game ended in a tie!`;
+				// 		setTimeout(() => {
+				// 			btnReset.click();
+				// 		}, 2000);
+				// 		return;
+				// 	}
+				// }, 300);
 			}
 		});
 	})();
