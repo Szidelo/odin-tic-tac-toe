@@ -17,10 +17,16 @@
 			"hard": "Hard Mode",
 			"impossible": "Impossible Mode"
 		},
+		"game_rules_header": "Game Rules",
 		"rules": {
 			"win": "Get 3 marks in a row. You win! The game ends.",
 			"defeat": "Opponent gets 3 marks in a row. You lose! The game ends.",
 			"draw": "The board is full. No 3 in a row. It's a draw! The game ends."
+		},
+		"rules_titles": {
+			"win": "Win Condition",
+			"defeat": "Defeat Condition",
+			"draw": "Draw Condition"
 		},
 		"turn_text": {
 			"player": "Your turn",
@@ -50,10 +56,16 @@
 			"hard": "Schwerer Modus",
 			"impossible": "Unmöglicher Modus"
 		},
+		"game_rules_header": "Spielregeln",
 		"rules": {
 			"win": "Erhalte 3 Markierungen in einer Reihe. Du gewinnst! Das Spiel endet.",
 			"defeat": "Der Gegner erhält 3 Markierungen in einer Reihe. Du verlierst! Das Spiel endet.",
 			"draw": "Das Spielfeld ist voll. Kein 3 in einer Reihe. Es ist unentschieden! Das Spiel endet."
+		},
+		"rules_titles": {
+			"win": "Sieg-Bedingung",
+			"defeat": "Niederlage-Bedingung",
+			"draw": "Unentschieden-Bedingung"
 		},
 		"turn_text": {
 			"player": "Du bist am Zug",
@@ -83,10 +95,16 @@
 			"hard": "Modalità Difficile",
 			"impossible": "Modalità Impossibile"
 		},
+		"game_rules_header": "Regole del Gioco",
 		"rules": {
 			"win": "Ottieni 3 segni di fila. Hai vinto! Il gioco finisce.",
 			"defeat": "L'avversario ottiene 3 segni di fila. Hai perso! Il gioco finisce.",
 			"draw": "La griglia è piena. Nessun 3 in fila. È un pareggio! Il gioco finisce."
+		},
+		"rules_titles": {
+			"win": "Condizione di Vittoria",
+			"defeat": "Condizione di Sconfitta",
+			"draw": "Condizione di Pareggio"
 		},
 		"turn_text": {
 			"player": "Il tuo turno",
@@ -116,10 +134,16 @@
 			"hard": "Mod Dificil",
 			"impossible": "Mod Imposibil"
 		},
+		"game_rules_header": "Reguli de Joc",
 		"rules": {
 			"win": "Obține 3 semne la rând. Ai câștigat! Jocul se termină.",
 			"defeat": "Adversarul obține 3 semne la rând. Ai pierdut! Jocul se termină.",
 			"draw": "Tabla este plină. Niciun 3 la rând. Este remiză! Jocul se termină."
+		},
+		"rules_titles": {
+			"win": "Condiție de Câștig",
+			"defeat": "Condiție de Pierdere",
+			"draw": "Condiție de Remiză"
 		},
 		"turn_text": {
 			"player": "Este rândul tău",
@@ -149,10 +173,16 @@
 			"hard": "Nehéz mód",
 			"impossible": "Lehetetlen mód"
 		},
+		"game_rules_header": "Játékszabályok",
 		"rules": {
 			"win": "Szerezz 3 jelet egymás után. Nyertél! A játék véget ér.",
 			"defeat": "Az ellenfél 3 jelet szerez egymás után. Vesztettél! A játék véget ér.",
 			"draw": "A tábla megtelt. Nincs 3 egy sorban. Döntetlen! A játék véget ér."
+		},
+		"rules_titles": {
+			"win": "Győzelmi Feltétel",
+			"defeat": "Vereségi Feltétel",
+			"draw": "Döntetlen Feltétel"
 		},
 		"turn_text": {
 			"player": "Te következel",

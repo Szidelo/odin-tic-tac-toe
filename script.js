@@ -249,9 +249,13 @@ const GameUI = () => {
 	const btnRulesGame = document.querySelector("#btn-rules-game");
 	const btnReset = document.querySelector("#reset-game");
 	const btnHome = document.querySelector("#btn-home");
+	const btnBack = document.querySelector("#btn-back");
+	const rulesTitle = document.querySelector("#rules-title");
+	const rulesContent = document.querySelectorAll(".rules-content");
 	const languageSelect = document.querySelector("#language-select");
 	const settingsSection = document.querySelector("#settings");
 	const gameSection = document.querySelector("#game");
+	const rulesSection = document.querySelector("#rules");
 	const cells = document.querySelectorAll(".cell");
 	const playerOneScore = document.querySelector("#player1-score");
 	const playerTwoScore = document.querySelector("#player2-score");
@@ -270,7 +274,7 @@ const GameUI = () => {
 	});
 
 	const updateText = (data) => {
-		const { titles, buttons, difficulty, turn_text } = data;
+		const { titles, buttons, difficulty, turn_text, rules, rules_titles, game_rules_header } = data;
 		mainTitle.textContent = titles.main;
 		btnSolo.textContent = buttons.play_solo;
 		btnWithFriend.textContent = buttons.play_friend;
@@ -279,6 +283,14 @@ const GameUI = () => {
 		btnReset.textContent = buttons.reset_game;
 		difficultyMode.textContent = difficulty.easy;
 		turn.textContent = turn_text.player;
+		rulesTitle.textContent = game_rules_header;
+		rulesContent.forEach((content, index) => {
+			const title = content.querySelector(".rules-content-title");
+			const paragraph = content.querySelector(".rules-content-paragraph");
+
+			title.textContent = rules_titles[Object.keys(rules_titles)[index]];
+			paragraph.textContent = rules[Object.keys(rules)[index]];
+		});
 	};
 
 	const fillBoard = (player, cell) => {
@@ -364,6 +376,14 @@ const GameUI = () => {
 		btnHome.addEventListener("click", () => {
 			settingsSection.style.display = "block";
 			gameSection.style.display = "none";
+		});
+		btnBack.addEventListener("click", () => {
+			rulesSection.classList.add("hidden");
+		});
+		[btnRules, btnRulesGame].forEach((btn) => {
+			btn.addEventListener("click", () => {
+				rulesSection.classList.remove("hidden");
+			});
 		});
 		btnReset.addEventListener("click", () => {
 			board.resetBoard();
