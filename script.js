@@ -385,10 +385,12 @@ const GameUI = () => {
 				rulesSection.classList.remove("hidden");
 			});
 		});
-		btnReset.addEventListener("click", () => {
+		btnReset.addEventListener("click", async () => {
+			const translations = await languageManager.getTranslations();
+			const text = translations.turn_text.player;
 			board.resetBoard();
 			game.resetGame();
-			turn.textContent = "Your turn";
+			turn.textContent = text;
 			cells.forEach((cell) => {
 				cell.textContent = "";
 				cell.classList.remove("filled");

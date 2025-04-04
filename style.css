@@ -198,12 +198,18 @@ option {
 	justify-content: space-between;
 }
 
+#turn {
+	text-align: center;
+	font-size: 1.5rem;
+}
+
 .board-container {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	gap: 2rem;
+	margin-top: 2rem;
 }
 
 #board {
@@ -291,6 +297,10 @@ option {
 	cursor: pointer;
 }
 
+.btn#btn-back:hover {
+	background-color: var(--secondary-color);
+}
+
 svg {
 	width: 2rem;
 	height: 2rem;
@@ -306,7 +316,7 @@ svg {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	gap: 4rem;
+	gap: 5rem;
 	max-width: 30rem;
 	margin: 0 auto;
 }
@@ -327,6 +337,7 @@ svg {
 
 #rules .main ul li {
 	display: flex;
+	justify-content: space-between;
 	gap: 1rem;
 	font-size: 1.2rem;
 	font-weight: 500;
