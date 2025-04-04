@@ -158,6 +158,15 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 		},
 	];
 
+	const getPlayersName = () => {
+		return players.forEach((player) => player.playerName);
+	};
+
+	const changeNames = (firstPlayerName, secondPlayerName) => {
+		players[0].playerName = firstPlayerName;
+		players[1].playerName = secondPlayerName;
+	};
+
 	const board = GameBoard();
 
 	let activePlayerIndex = 0;
@@ -242,7 +251,7 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 
 	printRound();
 
-	return { playRound, getActivePlayer, resetGame, getWinner, getScore, setScore };
+	return { playRound, getPlayersName, changeNames, getActivePlayer, resetGame, getWinner, getScore, setScore };
 };
 
 const GameUI = () => {
@@ -259,7 +268,6 @@ const GameUI = () => {
 	const btnBack = document.querySelector("#btn-back");
 	const rulesTitle = document.querySelector("#rules-title");
 	const rulesContent = document.querySelectorAll(".rules-content");
-	const languageSelect = document.querySelector("#language-select");
 	const settingsSection = document.querySelector("#settings");
 	const gameSection = document.querySelector("#game");
 	const rulesSection = document.querySelector("#rules");
@@ -272,6 +280,8 @@ const GameUI = () => {
 	const savedLanguage = localStorage.getItem("lng") || LANGUAGES.ENGLISH;
 	const dropdownOptions = document.getElementById("dropdown-options");
 	const dropdownSelected = document.querySelector(".dropdown-selected");
+	const modal = document.querySelector("#modal");
+	const btnCancel = document.querySelector("#cancel-btn");
 
 	const fillBoard = (player, cell) => {
 		const row = cell.dataset.row;
@@ -345,7 +355,9 @@ const GameUI = () => {
 		const cssClass = activePlayer.char === "X" ? "filled-x" : "filled-o";
 		const winningPattern = board
 			.generateWinPatterns()
-			.find((pattern) => pattern.every(([row, col]) => board.getBoard()[row][col].getValue().char === activePlayer.char));
+			.find((pattern) =>
+				pattern.every(([row, col]) => board.getBoard()[row][col].getValue().char === activePlayer.char)
+			);
 
 		if (winningPattern) {
 			winningPattern.forEach(([row, col]) => {
@@ -406,6 +418,12 @@ const GameUI = () => {
 		btnSolo.addEventListener("click", () => {
 			settingsSection.style.display = "none";
 			gameSection.style.display = "block";
+		});
+		btnWithFriend.addEventListener("click", () => {
+			modal.showModal();
+		});
+		btnCancel.addEventListener("click", () => {
+			modal.close();
 		});
 		btnHome.addEventListener("click", () => {
 			settingsSection.style.display = "block";
