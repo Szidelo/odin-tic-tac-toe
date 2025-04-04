@@ -11,6 +11,14 @@ const LANGUAGES = {
 	HUNGARIAN: "hu",
 };
 
+const FLAGS = {
+	en: "https://flagcdn.com/w40/gb.png",
+	de: "https://flagcdn.com/w40/de.png",
+	it: "https://flagcdn.com/w40/it.png",
+	ro: "https://flagcdn.com/w40/ro.png",
+	hu: "https://flagcdn.com/w40/hu.png",
+};
+
 const LanguageManager = () => {
 	let currentLanguage = localStorage.getItem("lng") || LANGUAGES.ENGLISH;
 	let translations = null; // to store translations
@@ -62,11 +70,10 @@ const GameBoard = (gridSize = 3) => {
 	};
 
 	const setCell = (row, col, char, player) => {
-		// change to pass row col and a player object argument
 		if (isCellAvailable(row, col)) {
-			board[row][col].setValue(char, player); //player object argument
+			board[row][col].setValue(char, player);
 		} else {
-			console.warn(`cell at row ${row} and col ${col} is not available`); // if i reset the game and try to set a cell that was already set, it will not work
+			console.warn(`cell at row ${row} and col ${col} is not available`);
 		}
 	};
 
@@ -261,16 +268,39 @@ const GameUI = () => {
 	const playerTwoScore = document.querySelector("#player2-score");
 	const turn = document.querySelector("#turn");
 	const difficultyMode = document.querySelector("#difficulty-mode");
+	const selectedFlag = document.getElementById("selected-flag");
+	const savedLanguage = localStorage.getItem("lng") || LANGUAGES.ENGLISH;
+	const dropdownOptions = document.getElementById("dropdown-options");
+	const dropdownSelected = document.querySelector(".dropdown-selected");
 
-	Object.entries(LANGUAGES).forEach(([key, value]) => {
-		const option = document.createElement("option");
-		option.setAttribute("value", value);
-		option.textContent = key.toLowerCase();
-		languageSelect.appendChild(option);
+	const fillBoard = (player, cell) => {
+		const row = cell.dataset.row;
+		const col = cell.dataset.col;
+		board.setCell(row, col, player.char, player.playerName);
+		cell.textContent = player.char;
+		cell.classList.add(player.char.toLowerCase());
+	};
 
-		if (languageManager.getCurrentLanguage() === option.value) {
-			option.setAttribute("selected", true);
-		}
+	Object.entries(FLAGS).forEach(([langCode, flagURL]) => {
+		selectedFlag.src = FLAGS[savedLanguage];
+		const option = document.createElement("div");
+		option.classList.add("dropdown-option");
+
+		const img = document.createElement("img");
+		img.src = flagURL;
+		img.alt = langCode;
+
+		option.appendChild(img);
+		option.addEventListener("click", () => {
+			selectedFlag.src = flagURL;
+			selectedFlag.alt = langCode;
+			languageManager.setLanguage(langCode);
+			localStorage.setItem("lng", langCode);
+			dropdownOptions.style.display = "none";
+			updateUI();
+		});
+
+		dropdownOptions.appendChild(option);
 	});
 
 	const updateText = (data) => {
@@ -293,22 +323,14 @@ const GameUI = () => {
 		});
 	};
 
-	const fillBoard = (player, cell) => {
-		const row = cell.dataset.row;
-		const col = cell.dataset.col;
-		board.setCell(row, col, player.char, player.playerName);
-		cell.textContent = player.char;
-		cell.classList.add(player.char.toLowerCase());
+	const handleLanguageChange = async (event) => {
+		languageManager.setLanguage(event.target.value);
+		await updateUI();
 	};
 
 	const updateUI = async () => {
 		const data = await languageManager.getTranslations();
 		updateText(data);
-	};
-
-	const handleLanguageChange = async (event) => {
-		languageManager.setLanguage(event.target.value);
-		await updateUI();
 	};
 
 	const updateScore = (winner) => {
@@ -320,6 +342,7 @@ const GameUI = () => {
 	const checkIfGameIsWon = () => !!game.getWinner();
 
 	const fillWinningPattern = (activePlayer) => {
+		const cssClass = activePlayer.char === "X" ? "filled-x" : "filled-o";
 		const winningPattern = board
 			.generateWinPatterns()
 			.find((pattern) => pattern.every(([row, col]) => board.getBoard()[row][col].getValue().char === activePlayer.char));
@@ -328,7 +351,7 @@ const GameUI = () => {
 			winningPattern.forEach(([row, col]) => {
 				const winningCell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
 				if (winningCell) {
-					winningCell.classList.add("filled");
+					winningCell.classList.add(cssClass);
 				}
 			});
 		}
@@ -352,7 +375,9 @@ const GameUI = () => {
 		const winner = game.getWinner();
 		updateScore(winner);
 		turn.textContent = winner === "Player One" ? text.win : text.defeat;
+		btnReset.setAttribute("disabled", true);
 		setTimeout(() => {
+			btnReset.removeAttribute("disabled");
 			btnReset.click();
 		}, 2000);
 	};
@@ -361,14 +386,23 @@ const GameUI = () => {
 		const translations = await languageManager.getTranslations();
 		const text = translations.game_over;
 		turn.textContent = text.draw;
+		btnReset.setAttribute("disabled", true);
 		setTimeout(() => {
+			btnReset.removeAttribute("disabled");
 			btnReset.click();
 		}, 2000);
 		return;
 	};
 
 	const handleEvents = (() => {
-		languageSelect.addEventListener("change", handleLanguageChange);
+		dropdownSelected.addEventListener("click", () => {
+			dropdownOptions.style.display = dropdownOptions.style.display === "block" ? "none" : "block";
+		});
+		document.addEventListener("click", (event) => {
+			if (!dropdownSelected.contains(event.target) && !dropdownOptions.contains(event.target)) {
+				dropdownOptions.style.display = "none"; // Close dropdown if clicked outside
+			}
+		});
 		btnSolo.addEventListener("click", () => {
 			settingsSection.style.display = "none";
 			gameSection.style.display = "block";
@@ -393,7 +427,8 @@ const GameUI = () => {
 			turn.textContent = text;
 			cells.forEach((cell) => {
 				cell.textContent = "";
-				cell.classList.remove("filled");
+				cell.classList.remove("filled-x");
+				cell.classList.remove("filled-o");
 				cell.classList.remove("x");
 				cell.classList.remove("o");
 			});

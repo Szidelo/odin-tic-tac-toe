@@ -55,7 +55,7 @@ main#app {
 #settings .main .logo {
 	width: 10rem;
 	height: 10rem;
-	background: radial-gradient(circle, var(--text-color) 0%, var(--secondary-color) 100%);
+	background: radial-gradient(circle, var(--button-hover) 0%, var(--primary-color) 100%);
 	border-radius: 0.5rem;
 	box-shadow: var(--shadow);
 	position: relative;
@@ -247,8 +247,15 @@ option {
 	cursor: pointer;
 }
 
-.cell.filled {
+.cell.filled-x {
 	background-color: var(--highlight-color);
+	color: var(--text-color);
+	animation: pulse 0.3s;
+	pointer-events: none;
+}
+
+.cell.filled-o {
+	background-color: var(--accent-color);
 	color: var(--text-color);
 	animation: pulse 0.3s;
 	pointer-events: none;
@@ -373,4 +380,54 @@ svg {
 #rules.hidden {
 	left: -100%;
 	opacity: 0;
+}
+
+.custom-dropdown {
+	position: relative;
+	/* width: 4rem;
+	height: 4rem; */
+	cursor: pointer;
+}
+
+.dropdown-selected {
+	display: flex;
+	align-items: center;
+	border: 1px solid var(--border-color);
+	border-radius: 5px;
+	background-color: var(--secondary-color);
+	justify-content: center;
+	width: 3rem;
+	height: 3rem;
+}
+
+.dropdown-selected img,
+.dropdown-option img {
+	width: 3rem;
+	height: 3rem;
+	padding: 0.5rem;
+	object-fit: cover;
+	border-radius: 50%;
+}
+
+.dropdown-options {
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	width: 100%;
+	border: 1px solid var(--border-color);
+	border-radius: 5px;
+	background-color: var(--secondary-color);
+	overflow: hidden;
+	z-index: 10;
+}
+
+.dropdown-option {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+}
+
+.dropdown-option:hover {
+	background: var(--button-hover);
 }
