@@ -24,6 +24,12 @@ const MODES = {
 	PVC: "Player vs Computer",
 };
 
+const DIFFICULTIES = {
+	EASY: "easy",
+	MEDIUM: "medium",
+	HARD: "hard",
+};
+
 const LanguageManager = () => {
 	let currentLanguage = localStorage.getItem("lng") || LANGUAGES.ENGLISH;
 	let translations = null; // to store translations
@@ -152,6 +158,32 @@ const Cell = () => {
 	return { getValue, setValue };
 };
 
+const Opponent = () => {
+	// implement minimax algorithm for computer choice.
+	// documentation: https://alialaa.com/blog/tic-tac-toe-js-minimax
+	let currentDifficulty = "";
+
+	const setDifficulty = (value) => {
+		currentDifficulty = value;
+	};
+
+	const getDifficulty = () => currentDifficulty;
+
+	const getEmptyCells = (board) => {
+		return board.getBoard().flatMap((row, i) =>
+			row.flatMap((cell, j) => {
+				return cell.getValue().char === "*" ? { row: i, col: j } : [];
+			})
+		);
+	};
+
+	const makeMove = (board, computerChar, humanChar) => {
+		// ---
+	};
+
+	return { setDifficulty, getDifficulty, getEmptyCells, makeMove };
+};
+
 const GameController = (playerOneName = "Player One", playerTwoName = "Player Two") => {
 	const players = [
 		{
@@ -245,6 +277,10 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 		}
 
 		board.setCell(row, col, char, playerName);
+		const opponent = Opponent();
+		opponent.setDifficulty(DIFFICULTIES.EASY);
+		const emptyCells = opponent.getEmptyCells(board);
+		console.log(emptyCells);
 		const isWon = board.checkWinner(char);
 		if (isWon) {
 			printRound();
@@ -281,6 +317,7 @@ const GameUI = () => {
 	const game = GameController();
 	const board = GameBoard();
 	const { PVC, PVP } = MODES;
+	const opponent = Opponent();
 	const languageManager = LanguageManager();
 	const mainTitle = document.querySelector("#main-title");
 	const btnSolo = document.querySelector("#btn-solo");
@@ -361,6 +398,8 @@ const GameUI = () => {
 		const data = await languageManager.getTranslations();
 		settingsSection.style.display = "none";
 		gameSection.style.display = "block";
+		opponent.setDifficulty(DIFFICULTIES.EASY);
+		game.getPlayersName("Computer");
 		updateText(data);
 	};
 
@@ -519,6 +558,7 @@ const GameUI = () => {
 
 	const handlePlayerCheck = (() => {
 		const isCellAvailable = (cell) => cell.textContent === "" && !game.getWinner();
+
 		document.addEventListener("click", (e) => {
 			if (e.target.classList.contains("cell")) {
 				const cell = e.target;
