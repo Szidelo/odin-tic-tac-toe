@@ -19,6 +19,11 @@ const FLAGS = {
 	hu: "https://flagcdn.com/w40/hu.png",
 };
 
+const MODES = {
+	PVP: "Player vs Player",
+	PVC: "Player vs Computer",
+};
+
 const LanguageManager = () => {
 	let currentLanguage = localStorage.getItem("lng") || LANGUAGES.ENGLISH;
 	let translations = null; // to store translations
@@ -26,6 +31,7 @@ const LanguageManager = () => {
 	const getCurrentLanguage = () => currentLanguage;
 
 	const setLanguage = (lang) => {
+		if (!translations[lang]) return; // avoid setting a unsupported language
 		currentLanguage = lang;
 		localStorage.setItem("lng", lang);
 	};
@@ -158,13 +164,12 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 		},
 	];
 
-	const getPlayersName = () => {
-		return players.forEach((player) => player.playerName);
-	};
-
 	const changeNames = (firstPlayerName, secondPlayerName) => {
 		players[0].playerName = firstPlayerName;
 		players[1].playerName = secondPlayerName;
+	};
+	const getPlayersName = () => {
+		return players.map((player) => player.playerName);
 	};
 
 	const board = GameBoard();
@@ -173,6 +178,13 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 	let gameEnded = false;
 	let rounds = 0;
 	let winner = null;
+	let mode;
+
+	const setMode = (newMode) => {
+		mode = newMode;
+	};
+
+	const getMode = () => mode;
 
 	const setWinner = (player) => {
 		winner = player;
@@ -251,12 +263,24 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 
 	printRound();
 
-	return { playRound, getPlayersName, changeNames, getActivePlayer, resetGame, getWinner, getScore, setScore };
+	return {
+		setMode,
+		getMode,
+		playRound,
+		getPlayersName,
+		changeNames,
+		getActivePlayer,
+		resetGame,
+		getWinner,
+		getScore,
+		setScore,
+	};
 };
 
 const GameUI = () => {
 	const game = GameController();
 	const board = GameBoard();
+	const { PVC, PVP } = MODES;
 	const languageManager = LanguageManager();
 	const mainTitle = document.querySelector("#main-title");
 	const btnSolo = document.querySelector("#btn-solo");
@@ -280,8 +304,6 @@ const GameUI = () => {
 	const savedLanguage = localStorage.getItem("lng") || LANGUAGES.ENGLISH;
 	const dropdownOptions = document.getElementById("dropdown-options");
 	const dropdownSelected = document.querySelector(".dropdown-selected");
-	const modal = document.querySelector("#modal");
-	const btnCancel = document.querySelector("#cancel-btn");
 
 	const fillBoard = (player, cell) => {
 		const row = cell.dataset.row;
@@ -315,13 +337,14 @@ const GameUI = () => {
 
 	const updateText = (data) => {
 		const { titles, buttons, difficulty, turn_text, rules, rules_titles, game_rules_header } = data;
+		const gameMode = game.getMode();
 		mainTitle.textContent = titles.main;
 		btnSolo.textContent = buttons.play_solo;
 		btnWithFriend.textContent = buttons.play_friend;
 		btnRules.textContent = buttons.game_rules;
 		btnRulesGame.textContent = buttons.game_rules;
 		btnReset.textContent = buttons.reset_game;
-		difficultyMode.textContent = difficulty.easy;
+		difficultyMode.textContent = gameMode === PVP ? PVP : difficulty.easy;
 		turn.textContent = turn_text.player;
 		rulesTitle.textContent = game_rules_header;
 		rulesContent.forEach((content, index) => {
@@ -333,9 +356,51 @@ const GameUI = () => {
 		});
 	};
 
-	const handleLanguageChange = async (event) => {
-		languageManager.setLanguage(event.target.value);
-		await updateUI();
+	const handlePlayerVsComputer = async () => {
+		game.setMode(PVC);
+		const data = await languageManager.getTranslations();
+		settingsSection.style.display = "none";
+		gameSection.style.display = "block";
+		updateText(data);
+	};
+
+	const handlePlayerVsPlayer = async () => {
+		game.setMode(PVP);
+		const data = await languageManager.getTranslations();
+
+		const modal = document.querySelector("#modal");
+		const btnCancel = document.querySelector("#cancel-btn");
+		const btnConfirm = document.querySelector("#confirm-btn");
+		const inputOne = document.querySelector("#player-one-name");
+		const inputTwo = document.querySelector("#player-two-name");
+		const playerOneNameElement = document.querySelector("#player1-name");
+		const playerTwoNameElement = document.querySelector("#player2-name");
+		let playerOneName = "";
+		let playerTwoName = "";
+
+		modal.showModal();
+
+		inputOne.addEventListener("change", (e) => {
+			playerOneName = e.target.value;
+		});
+
+		inputTwo.addEventListener("change", (e) => {
+			playerTwoName = e.target.value;
+		});
+
+		btnCancel.addEventListener("click", () => {
+			modal.close();
+		});
+
+		btnConfirm.addEventListener("click", () => {
+			game.changeNames(playerOneName, playerTwoName);
+			playerOneNameElement.textContent = playerOneName;
+			playerTwoNameElement.textContent = playerTwoName;
+			modal.close();
+			settingsSection.style.display = "none";
+			gameSection.style.display = "block";
+			updateText(data);
+		});
 	};
 
 	const updateUI = async () => {
@@ -370,23 +435,25 @@ const GameUI = () => {
 	};
 
 	const handleTurnMessage = async (activePlayer) => {
+		const [playerOneName, playerTwoName] = game.getPlayersName();
 		const translations = await languageManager.getTranslations();
 		const turn_text = translations.turn_text;
+		const gameMode = game.getMode();
 
-		if (activePlayer.playerName === "Player One") {
-			turn.textContent = turn_text.player;
-		} else if (activePlayer.playerName === "Player Two") {
-			turn.textContent = turn_text.opponent;
+		if (activePlayer.playerName === playerOneName) {
+			turn.textContent = gameMode === PVC ? turn_text.player : playerOneName;
+		} else if (activePlayer.playerName === playerTwoName) {
+			turn.textContent = gameMode === PVC ? turn_text.opponent : playerTwoName;
 		}
 	};
 
 	const handleWin = async (activePlayer) => {
 		const translations = await languageManager.getTranslations();
 		const text = translations.game_over;
-		fillWinningPattern(activePlayer);
 		const winner = game.getWinner();
+		fillWinningPattern(activePlayer);
 		updateScore(winner);
-		turn.textContent = winner === "Player One" ? text.win : text.defeat;
+		turn.textContent = winner === game.getPlayersName()[0] ? text.win : text.defeat;
 		btnReset.setAttribute("disabled", true);
 		setTimeout(() => {
 			btnReset.removeAttribute("disabled");
@@ -412,19 +479,16 @@ const GameUI = () => {
 		});
 		document.addEventListener("click", (event) => {
 			if (!dropdownSelected.contains(event.target) && !dropdownOptions.contains(event.target)) {
-				dropdownOptions.style.display = "none"; // Close dropdown if clicked outside
+				dropdownOptions.style.display = "none";
 			}
 		});
-		btnSolo.addEventListener("click", () => {
-			settingsSection.style.display = "none";
-			gameSection.style.display = "block";
+		btnSolo.addEventListener("click", async () => {
+			handlePlayerVsComputer();
 		});
 		btnWithFriend.addEventListener("click", () => {
-			modal.showModal();
+			handlePlayerVsPlayer();
 		});
-		btnCancel.addEventListener("click", () => {
-			modal.close();
-		});
+
 		btnHome.addEventListener("click", () => {
 			settingsSection.style.display = "block";
 			gameSection.style.display = "none";

@@ -151,6 +151,10 @@ option {
 	padding: 2rem 0;
 }
 
+.player-name {
+	margin-right: 1rem;
+}
+
 .player-labels {
 	display: flex;
 	justify-content: space-between;
@@ -453,6 +457,11 @@ dialog::backdrop {
 	flex-direction: column;
 	gap: 0.5rem;
 	padding: 0.5rem 1rem;
+	color: var(--text-color);
+}
+
+.input-container input {
+	padding: 0.25rem 0.5rem;
 }
 
 .buttons-container {
