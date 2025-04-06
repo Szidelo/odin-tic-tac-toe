@@ -170,18 +170,58 @@ const Opponent = () => {
 	const getDifficulty = () => currentDifficulty;
 
 	const getEmptyCells = (board) => {
-		return board.getBoard().flatMap((row, i) =>
-			row.flatMap((cell, j) => {
-				return cell.getValue().char === "*" ? { row: i, col: j } : [];
-			})
+		return board.getBoard().flatMap(
+			(
+				row,
+				i // create one level arr
+			) =>
+				row.flatMap((cell, j) => {
+					return cell.getValue().char === "*" ? { row: i, col: j } : [];
+				})
 		);
+	};
+
+	const cloneBoard = (board) => {
+		const newBoard = GameBoard();
+
+		board.getBoard().forEach((row, rowIndex) => {
+			row.forEach((cell, cellIndex) => {
+				const value = cell.getValue();
+				newBoard.setCell(rowIndex, cellIndex, value.char, value.playerName);
+			});
+		});
+
+		return newBoard;
+	};
+
+	const makeRandomMove = (emptyCells) => {
+		const randomIndex = Math.floor(Math.random() * emptyCells.length);
+		const { row, col } = emptyCells[randomIndex];
+		return { row, col };
 	};
 
 	const makeMove = (board, computerChar, humanChar) => {
 		// ---
+
+		const emptyCells = getEmptyCells(board);
+		if (emptyCells.length === 0) return; // no more moves to make
+
+		let move;
+
+		switch (currentDifficulty) {
+			case DIFFICULTIES.EASY:
+				move = makeRandomMove(emptyCells); // random move
+				console.log("easy move", move);
+				break;
+			default:
+				move = makeRandomMove(emptyCells); // random move
+				break;
+		}
+
+		return move;
 	};
 
-	return { setDifficulty, getDifficulty, getEmptyCells, makeMove };
+	return { setDifficulty, getDifficulty, getEmptyCells, makeMove, cloneBoard };
 };
 
 const GameController = (playerOneName = "Player One", playerTwoName = "Player Two") => {
@@ -196,10 +236,17 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 		},
 	];
 
+	const opponent = Opponent();
+	opponent.setDifficulty(DIFFICULTIES.EASY);
+
+	const getOpponent = () => opponent;
+
 	const changeNames = (firstPlayerName, secondPlayerName) => {
 		players[0].playerName = firstPlayerName;
 		players[1].playerName = secondPlayerName;
 	};
+
+	const getPlayers = () => players;
 	const getPlayersName = () => {
 		return players.map((player) => player.playerName);
 	};
@@ -277,10 +324,7 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 		}
 
 		board.setCell(row, col, char, playerName);
-		const opponent = Opponent();
-		opponent.setDifficulty(DIFFICULTIES.EASY);
-		const emptyCells = opponent.getEmptyCells(board);
-		console.log(emptyCells);
+
 		const isWon = board.checkWinner(char);
 		if (isWon) {
 			printRound();
@@ -304,12 +348,14 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 		getMode,
 		playRound,
 		getPlayersName,
+		getPlayers,
 		changeNames,
 		getActivePlayer,
 		resetGame,
 		getWinner,
 		getScore,
 		setScore,
+		getOpponent,
 	};
 };
 
@@ -317,7 +363,6 @@ const GameUI = () => {
 	const game = GameController();
 	const board = GameBoard();
 	const { PVC, PVP } = MODES;
-	const opponent = Opponent();
 	const languageManager = LanguageManager();
 	const mainTitle = document.querySelector("#main-title");
 	const btnSolo = document.querySelector("#btn-solo");
@@ -341,6 +386,8 @@ const GameUI = () => {
 	const savedLanguage = localStorage.getItem("lng") || LANGUAGES.ENGLISH;
 	const dropdownOptions = document.getElementById("dropdown-options");
 	const dropdownSelected = document.querySelector(".dropdown-selected");
+	const playerOneNameElement = document.querySelector("#player1-name");
+	const playerTwoNameElement = document.querySelector("#player2-name");
 
 	const fillBoard = (player, cell) => {
 		const row = cell.dataset.row;
@@ -395,11 +442,12 @@ const GameUI = () => {
 
 	const handlePlayerVsComputer = async () => {
 		game.setMode(PVC);
+		game.changeNames("Human", "Computer");
+		playerOneNameElement.textContent = game.getPlayersName()[0];
+		playerTwoNameElement.textContent = game.getPlayersName()[1];
 		const data = await languageManager.getTranslations();
 		settingsSection.style.display = "none";
 		gameSection.style.display = "block";
-		opponent.setDifficulty(DIFFICULTIES.EASY);
-		game.getPlayersName("Computer");
 		updateText(data);
 	};
 
@@ -412,8 +460,6 @@ const GameUI = () => {
 		const btnConfirm = document.querySelector("#confirm-btn");
 		const inputOne = document.querySelector("#player-one-name");
 		const inputTwo = document.querySelector("#player-two-name");
-		const playerOneNameElement = document.querySelector("#player1-name");
-		const playerTwoNameElement = document.querySelector("#player2-name");
 		let playerOneName = "";
 		let playerTwoName = "";
 
@@ -459,9 +505,7 @@ const GameUI = () => {
 		const cssClass = activePlayer.char === "X" ? "filled-x" : "filled-o";
 		const winningPattern = board
 			.generateWinPatterns()
-			.find((pattern) =>
-				pattern.every(([row, col]) => board.getBoard()[row][col].getValue().char === activePlayer.char)
-			);
+			.find((pattern) => pattern.every(([row, col]) => board.getBoard()[row][col].getValue().char === activePlayer.char));
 
 		if (winningPattern) {
 			winningPattern.forEach(([row, col]) => {
@@ -512,6 +556,29 @@ const GameUI = () => {
 		return;
 	};
 
+	const handleComputerChange = async (computer, player) => {
+		const move = game.getOpponent().makeMove(board, computer.char, player.char);
+		if (move) {
+			const { row, col } = move;
+			game.playRound(row, col);
+			const cellToFill = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+			fillBoard(computer, cellToFill);
+
+			await handleTurnMessage(game.getActivePlayer());
+
+			setTimeout(() => {
+				if (checkIfGameIsWon()) {
+					handleWin(computer);
+					return;
+				}
+				if (board.checkTie()) {
+					handleTie();
+					return;
+				}
+			}, 300);
+		}
+	};
+
 	const handleEvents = (() => {
 		dropdownSelected.addEventListener("click", () => {
 			dropdownOptions.style.display = dropdownOptions.style.display === "block" ? "none" : "block";
@@ -559,34 +626,37 @@ const GameUI = () => {
 	const handlePlayerCheck = (() => {
 		const isCellAvailable = (cell) => cell.textContent === "" && !game.getWinner();
 
-		document.addEventListener("click", (e) => {
-			if (e.target.classList.contains("cell")) {
-				const cell = e.target;
-				if (!isCellAvailable(cell)) return; // check if the cell is available
+		document.addEventListener("click", async (e) => {
+			if (!e.target.classList.contains("cell")) return;
 
-				const row = cell.dataset.row;
-				const col = cell.dataset.col;
+			const cell = e.target;
+			if (!isCellAvailable(cell)) return;
 
-				const activePlayer = game.getActivePlayer();
-				game.playRound(row, col);
-				fillBoard(activePlayer, cell);
+			const row = cell.dataset.row;
+			const col = cell.dataset.col;
 
-				if (game.getWinner() === null && !board.checkTie()) {
-					const nextPlayer = game.getActivePlayer();
-					handleTurnMessage(nextPlayer);
+			const activePlayer = game.getActivePlayer();
+			game.playRound(row, col);
+			fillBoard(activePlayer, cell);
+
+			const nextPlayer = game.getActivePlayer();
+			await handleTurnMessage(nextPlayer);
+
+			setTimeout(() => {
+				if (checkIfGameIsWon()) {
+					handleWin(activePlayer);
+					return;
 				}
 
-				setTimeout(() => {
-					if (checkIfGameIsWon()) {
-						handleWin(activePlayer);
-						return;
-					}
-					if (board.checkTie()) {
-						handleTie();
-						return;
-					}
-				}, 300);
-			}
+				if (board.checkTie()) {
+					handleTie();
+					return;
+				}
+
+				if (nextPlayer.playerName === "Computer") {
+					handleComputerChange(nextPlayer, activePlayer);
+				}
+			}, 300);
 		});
 	})();
 
