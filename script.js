@@ -194,15 +194,60 @@ const Opponent = () => {
 		return newBoard;
 	};
 
+	const minimax = (board, depth, isMaximizing, computerChar, humanChar) => {
+		if (board.checkWinner(computerChar)) return 10 - depth; // computer wins
+		if (board.checkWinner(humanChar)) return depth - 10; // human wins
+		if (board.checkTie()) return 0; // tie
+
+		const emptyCells = getEmptyCells(board);
+
+		if (isMaximizing) {
+			let bestScore = -Infinity;
+			for (const { row, col } of emptyCells) {
+				const newBoard = cloneBoard(board);
+				newBoard.setCell(row, col, computerChar, "Computer");
+				const score = minimax(newBoard, depth + 1, false, computerChar, humanChar);
+				bestScore = Math.max(score, bestScore);
+			}
+			return bestScore;
+		} else {
+			let bestScore = Infinity;
+			for (const { row, col } of emptyCells) {
+				const newBoard = cloneBoard(board);
+				newBoard.setCell(row, col, humanChar, "Human");
+				const score = minimax(newBoard, depth + 1, true, computerChar, humanChar);
+				bestScore = Math.min(score, bestScore);
+			}
+			return bestScore;
+		}
+	};
+
+	const getBestMove = (board) => {
+		const emptyCells = getEmptyCells(board);
+		let bestScore = -Infinity;
+		let bestMove = null;
+
+		for (const { row, col } of emptyCells) {
+			const newBoard = cloneBoard(board);
+			newBoard.setCell(row, col, "O", "Computer");
+			const score = minimax(newBoard, 0, false, "O", "X");
+
+			if (score > bestScore) {
+				bestScore = score;
+				bestMove = { row, col };
+			}
+		}
+
+		return bestMove;
+	};
+
 	const makeRandomMove = (emptyCells) => {
 		const randomIndex = Math.floor(Math.random() * emptyCells.length);
 		const { row, col } = emptyCells[randomIndex];
 		return { row, col };
 	};
 
-	const makeMove = (board, computerChar, humanChar) => {
-		// ---
-
+	const makeMove = (board) => {
 		const emptyCells = getEmptyCells(board);
 		if (emptyCells.length === 0) return; // no more moves to make
 
@@ -212,6 +257,20 @@ const Opponent = () => {
 			case DIFFICULTIES.EASY:
 				move = makeRandomMove(emptyCells); // random move
 				console.log("easy move", move);
+				break;
+			case DIFFICULTIES.MEDIUM:
+				if (Math.random() < 0.25) {
+					move = makeRandomMove(emptyCells); // random move
+					console.log("easy move", move);
+					break;
+				} else {
+					move = getBestMove(board); // medium move - to implement better algorithm for medium difficulty
+					console.log("medium move", move);
+					break;
+				}
+			case DIFFICULTIES.HARD:
+				move = getBestMove(board);
+				console.log("medium move", move);
 				break;
 			default:
 				move = makeRandomMove(emptyCells); // random move
@@ -237,7 +296,7 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 	];
 
 	const opponent = Opponent();
-	opponent.setDifficulty(DIFFICULTIES.EASY);
+	opponent.setDifficulty(DIFFICULTIES.MEDIUM);
 
 	const getOpponent = () => opponent;
 
@@ -556,8 +615,8 @@ const GameUI = () => {
 		return;
 	};
 
-	const handleComputerChange = async (computer, player) => {
-		const move = game.getOpponent().makeMove(board, computer.char, player.char);
+	const handleComputerChange = async (computer) => {
+		const move = game.getOpponent().makeMove(board);
 		if (move) {
 			const { row, col } = move;
 			game.playRound(row, col);
