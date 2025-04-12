@@ -472,7 +472,8 @@ dialog::backdrop {
 	max-height: 3rem;
 }
 
-#confirm-btn, #cancel-btn {
+#confirm-btn,
+#cancel-btn {
 	padding: 0.5rem !important;
 	box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.3);
 }
@@ -483,4 +484,60 @@ dialog::backdrop {
 
 #cancel-btn {
 	background-color: var(--accent-color);
+}
+
+.difficulty-dropdown {
+	position: relative;
+	width: 150px;
+	cursor: pointer;
+	user-select: none;
+	height: min-content;
+	margin-top: 0.5rem;
+}
+
+.difficulty-dropdown svg {
+	position: absolute;
+	top: 50%;
+	right: 0;
+	transform: translateY(-50%);
+	width: 1.5rem;
+	height: 1.5rem;
+}
+
+.difficulty-dropdown svg.rotate-arrow {
+	transform: translateY(-50%) rotate(180deg);
+}
+
+.selected-difficulty {
+	color: var(--text-color);
+	padding: 0.5rem;
+	border-bottom: 1px solid var(--text-color);
+	font-size: 0.8rem;
+}
+
+.difficulty-options {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	width: 100%;
+	background-color: var(--primary-color);
+	color: var(--text-color);
+	border-bottom: 1px solid var(--text-color);
+	display: none;
+	flex-direction: column;
+	z-index: 10;
+	font-size: 0.8rem;
+}
+
+.option-diff {
+	padding: 10px;
+	border-bottom: 1px solid var(--text-color);
+}
+
+.option-diff:hover {
+	background-color: #555;
+}
+
+.difficulty-dropdown.open .difficulty-options {
+	display: flex;
 }

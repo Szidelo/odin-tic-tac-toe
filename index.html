@@ -11,20 +11,33 @@
 			<dialog id="modal">
 				<div class="input-container">
 					<label for="player-one-name">Player 1 Name</label>
-					<input type="text" name="player-one-name" id="player-one-name" placeholder="Bruce Lee...">
+					<input type="text" name="player-one-name" id="player-one-name" placeholder="Bruce Lee..." />
 				</div>
 				<div class="input-container">
 					<label for="player-two-name">Player 2 Name</label>
-					<input type="text" name="player-two-name" id="player-two-name" placeholder="Chuck Noris...">
+					<input type="text" name="player-two-name" id="player-two-name" placeholder="Chuck Noris..." />
 				</div>
-				<div  class="buttons-container">
+				<div class="buttons-container">
 					<button id="confirm-btn" class="btn">Confirm</button>
 					<button id="cancel-btn" class="btn">Cancel</button>
 				</div>
 			</dialog>
 			<div id="settings">
 				<div class="top">
-					<div class="theme">0</div>
+					<div class="difficulty-dropdown">
+						<div class="selected-difficulty">Easy</div>
+						<div class="difficulty-options">
+							<div class="option-diff" data-difficulty="easy">Easy</div>
+							<div class="option-diff" data-difficulty="intermediate">Intermediate</div>
+							<div class="option-diff" data-difficulty="hard">Hard</div>
+							<div class="option-diff" data-difficulty="impossible">Impossible</div>
+						</div>
+						<svg class="svg-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+							<title>chevron-down</title>
+							<path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+						</svg>
+					</div>
+
 					<div class="lang">
 						<div class="custom-dropdown">
 							<div class="dropdown-selected">

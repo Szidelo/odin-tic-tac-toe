@@ -26,8 +26,9 @@ const MODES = {
 
 const DIFFICULTIES = {
 	EASY: "easy",
-	MEDIUM: "medium",
+	INTERMEDIATE: "intermediate",
 	HARD: "hard",
+	IMPOSSIBLE: "impossible",
 };
 
 const LanguageManager = () => {
@@ -258,22 +259,29 @@ const Opponent = () => {
 				move = makeRandomMove(emptyCells); // random move
 				console.log("easy move", move);
 				break;
-			case DIFFICULTIES.MEDIUM:
-				if (Math.random() < 0.25) {
-					move = makeRandomMove(emptyCells); // random move
+			case DIFFICULTIES.INTERMEDIATE:
+				if (Math.random() < 0.5) {
+					move = makeRandomMove(emptyCells);
 					console.log("easy move", move);
 					break;
 				} else {
-					move = getBestMove(board); // medium move - to implement better algorithm for medium difficulty
+					move = getBestMove(board);
 					console.log("medium move", move);
 					break;
 				}
 			case DIFFICULTIES.HARD:
+				if (Math.random() < 0.25) {
+					move = makeRandomMove(emptyCells);
+					console.log("easy move", move);
+					break;
+				} else {
+					move = getBestMove(board);
+					console.log("medium move", move);
+					break;
+				}
+			case DIFFICULTIES.IMPOSSIBLE:
 				move = getBestMove(board);
 				console.log("medium move", move);
-				break;
-			default:
-				move = makeRandomMove(emptyCells); // random move
 				break;
 		}
 
@@ -296,7 +304,8 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 	];
 
 	const opponent = Opponent();
-	opponent.setDifficulty(DIFFICULTIES.MEDIUM);
+
+	opponent.setDifficulty(DIFFICULTIES.EASY);
 
 	const getOpponent = () => opponent;
 
@@ -447,6 +456,13 @@ const GameUI = () => {
 	const dropdownSelected = document.querySelector(".dropdown-selected");
 	const playerOneNameElement = document.querySelector("#player1-name");
 	const playerTwoNameElement = document.querySelector("#player2-name");
+	const difficultyDropdown = document.querySelector(".difficulty-dropdown");
+	const selectedDifficulty = document.querySelector(".selected-difficulty");
+	const difficultyOptions = document.querySelectorAll(".option-diff");
+
+	const setDifficulty = (value) => {
+		game.getOpponent().setDifficulty(value);
+	};
 
 	const fillBoard = (player, cell) => {
 		const row = cell.dataset.row;
@@ -478,16 +494,37 @@ const GameUI = () => {
 		dropdownOptions.appendChild(option);
 	});
 
+	const updateDifficultyModeText = async () => {
+		const translations = await languageManager.getTranslations();
+		const difficultyText = translations.difficulty;
+		const currentDifficulty = game.getOpponent().getDifficulty();
+		const difficultyModeText = difficultyText[currentDifficulty] || currentDifficulty;
+		difficultyMode.textContent = difficultyModeText;
+	};
+
+	const updateDifficultyDropDownText = async () => {
+		const translations = await languageManager.getTranslations();
+		const difficultyText = translations.difficulty;
+
+		difficultyOptions.forEach((option) => {
+			const value = option.dataset.difficulty;
+			const difficultyModeText = difficultyText[value] || value;
+			option.textContent = difficultyModeText;
+		});
+	};
+
 	const updateText = (data) => {
 		const { titles, buttons, difficulty, turn_text, rules, rules_titles, game_rules_header } = data;
 		const gameMode = game.getMode();
+		updateDifficultyDropDownText();
+		selectedDifficulty.textContent = difficulty[game.getOpponent().getDifficulty()];
 		mainTitle.textContent = titles.main;
 		btnSolo.textContent = buttons.play_solo;
 		btnWithFriend.textContent = buttons.play_friend;
 		btnRules.textContent = buttons.game_rules;
 		btnRulesGame.textContent = buttons.game_rules;
 		btnReset.textContent = buttons.reset_game;
-		difficultyMode.textContent = gameMode === PVP ? PVP : difficulty.easy;
+		difficultyMode.textContent = gameMode === PVP ? PVP : updateDifficultyModeText();
 		turn.textContent = turn_text.player;
 		rulesTitle.textContent = game_rules_header;
 		rulesContent.forEach((content, index) => {
@@ -639,12 +676,33 @@ const GameUI = () => {
 	};
 
 	const handleEvents = (() => {
+		const svgArrow = document.querySelector(".svg-arrow");
 		dropdownSelected.addEventListener("click", () => {
 			dropdownOptions.style.display = dropdownOptions.style.display === "block" ? "none" : "block";
 		});
 		document.addEventListener("click", (event) => {
 			if (!dropdownSelected.contains(event.target) && !dropdownOptions.contains(event.target)) {
 				dropdownOptions.style.display = "none";
+			}
+		});
+		selectedDifficulty.addEventListener("click", () => {
+			difficultyDropdown.classList.toggle("open");
+			const isOpen = difficultyDropdown.classList.contains("open");
+			svgArrow.classList.toggle("rotate-arrow", isOpen);
+		});
+		difficultyOptions.forEach((option) => {
+			option.addEventListener("click", () => {
+				const value = option.dataset.difficulty;
+				selectedDifficulty.textContent = option.textContent;
+				difficultyDropdown.classList.remove("open");
+				svgArrow.classList.remove("rotate-arrow");
+				setDifficulty(value);
+			});
+		});
+		document.addEventListener("click", (e) => {
+			if (!difficultyDropdown.contains(e.target)) {
+				difficultyDropdown.classList.remove("open");
+				svgArrow.classList.remove("rotate-arrow");
 			}
 		});
 		btnSolo.addEventListener("click", async () => {
