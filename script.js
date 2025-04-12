@@ -354,6 +354,11 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 		}
 	};
 
+	const resetScore = () => {
+		score.playerOne = 0;
+		score.playerTwo = 0;
+	};
+
 	const resetGame = () => {
 		activePlayerIndex = 0;
 		gameEnded = false;
@@ -423,6 +428,7 @@ const GameController = (playerOneName = "Player One", playerTwoName = "Player Tw
 		getWinner,
 		getScore,
 		setScore,
+		resetScore,
 		getOpponent,
 	};
 };
@@ -438,6 +444,7 @@ const GameUI = () => {
 	const btnRules = document.querySelector("#btn-rules");
 	const btnRulesGame = document.querySelector("#btn-rules-game");
 	const btnReset = document.querySelector("#reset-game");
+	const btnNewGame = document.querySelector("#new-game");
 	const btnHome = document.querySelector("#btn-home");
 	const btnBack = document.querySelector("#btn-back");
 	const rulesTitle = document.querySelector("#rules-title");
@@ -524,6 +531,7 @@ const GameUI = () => {
 		btnRules.textContent = buttons.game_rules;
 		btnRulesGame.textContent = buttons.game_rules;
 		btnReset.textContent = buttons.reset_game;
+		btnNewGame.textContent = buttons.new_game;
 		difficultyMode.textContent = gameMode === PVP ? PVP : updateDifficultyModeText();
 		turn.textContent = turn_text.player;
 		rulesTitle.textContent = game_rules_header;
@@ -724,6 +732,10 @@ const GameUI = () => {
 				rulesSection.classList.remove("hidden");
 			});
 		});
+		btnNewGame.addEventListener("click", () => {
+			btnReset.click();
+			game.resetScore();
+		});
 		btnReset.addEventListener("click", async () => {
 			const translations = await languageManager.getTranslations();
 			const text = translations.turn_text.player;
@@ -771,7 +783,7 @@ const GameUI = () => {
 				}
 
 				if (nextPlayer.playerName === "Computer") {
-					handleComputerChange(nextPlayer, activePlayer);
+					handleComputerChange(nextPlayer);
 				}
 			}, 300);
 		});

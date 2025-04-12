@@ -7,6 +7,7 @@
 		"buttons": {
 			"play_solo": "Play Solo",
 			"play_friend": "Play with a Friend",
+			"new_game": "New Game",
 			"reset_game": "Reset Game",
 			"game_rules": "Game Rules",
 			"about": "About"
@@ -46,6 +47,7 @@
 		"buttons": {
 			"play_solo": "Alleine spielen",
 			"play_friend": "Mit einem Freund spielen",
+			"new_game": "Neues Spiel",
 			"reset_game": "Spiel zurücksetzen",
 			"game_rules": "Spielregeln",
 			"about": "Über"
@@ -85,6 +87,7 @@
 		"buttons": {
 			"play_solo": "Gioca da solo",
 			"play_friend": "Gioca con un amico",
+			"new_game": "Nuova partita",
 			"reset_game": "Resetta il gioco",
 			"game_rules": "Regole del gioco",
 			"about": "Informazioni"
@@ -124,6 +127,7 @@
 		"buttons": {
 			"play_solo": "Joacă singur",
 			"play_friend": "Joacă cu un prieten",
+			"new_game": "Joc nou",
 			"reset_game": "Resetează jocul",
 			"game_rules": "Reguli de joc",
 			"about": "Despre"
@@ -163,6 +167,7 @@
 		"buttons": {
 			"play_solo": "Játssz egyedül",
 			"play_friend": "Játssz egy baráttal",
+			"new_game": "Új játék",
 			"reset_game": "Játék újraindítása",
 			"game_rules": "Játékszabályok",
 			"about": "Névjegy"
