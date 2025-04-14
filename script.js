@@ -735,6 +735,8 @@ const GameUI = () => {
 		btnNewGame.addEventListener("click", () => {
 			btnReset.click();
 			game.resetScore();
+			playerOneScore.textContent = game.getScore().playerOne;
+			playerTwoScore.textContent = game.getScore().playerTwo;
 		});
 		btnReset.addEventListener("click", async () => {
 			const translations = await languageManager.getTranslations();
