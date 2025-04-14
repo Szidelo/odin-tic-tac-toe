@@ -582,6 +582,10 @@ const GameUI = () => {
 		});
 
 		btnConfirm.addEventListener("click", () => {
+			if (playerOneName === "" || playerTwoName === "") {
+				alert("Please enter both player names.");
+				return;
+			}
 			game.changeNames(playerOneName, playerTwoName);
 			playerOneNameElement.textContent = playerOneName;
 			playerTwoNameElement.textContent = playerTwoName;
